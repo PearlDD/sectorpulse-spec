@@ -68,3 +68,12 @@
 {"type": "verdict.overridden", "timestamp": "2026-08-07T21:27:48.767955+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"exp_id": 2, "original_verdict": "keep", "new_verdict": "revert", "reason": "score_direction; anti_pattern"}}
 {"type": "experiment.finalize", "timestamp": "2026-08-07T21:27:48.770442+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"exp_id": 2, "verdict": "revert", "hypothesis": "Fix frontend static serving with SPAStaticFiles fallback"}}
 {"type": "experiment.begin", "timestamp": "2026-08-07T21:28:12.315912+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"exp_id": 3, "hypothesis": "Add SPAStaticFiles class to serve React SPA for client-side routes"}}
+{"type": "experiment.finalize", "timestamp": "2026-08-07T21:28:28.435204+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"exp_id": 3, "verdict": "keep", "hypothesis": "Add SPAStaticFiles class to serve React SPA for client-side routes"}}
+{"type": "phase.verdict", "timestamp": "2026-08-07T21:28:35.162653+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"verdict": "keep", "exp_id": 3}}
+{"type": "phase.eval.completed", "timestamp": "2026-08-07T21:28:35.237515+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"exp_id": 3}}
+{"type": "agent.started", "timestamp": "2026-08-07T21:28:56.472702+00:00", "project": "sectorpulse-spec", "agent": "archivist", "data": {"task": "Final archive for this factory improve cycle on /Users/pearl/factory-projects/sectorpulse-spec.\n1. Read full experiment history: factory history /Users/pearl/factory-projects/sectorpulse-spec\n2. Exper"}}
+{"type": "agent.completed", "timestamp": "2026-08-07T21:30:08.796431+00:00", "project": "sectorpulse-spec", "agent": "archivist", "data": {"return_code": 0}}
+{"type": "phase.archive.completed", "timestamp": "2026-08-07T21:30:14.771168+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"exp_id": 3}}
+{"type": "sprint.completed", "timestamp": "2026-08-07T21:30:14.840037+00:00", "project": "sectorpulse-spec", "agent": null, "data": {}}
+{"type": "summary.started", "timestamp": "2026-08-07T21:30:18.994905+00:00", "project": "sectorpulse-spec", "agent": null, "data": {}}
+{"type": "summary.completed", "timestamp": "2026-08-07T21:30:18.998530+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"kept": 1, "reverted": 2, "errored": 0, "backlog": 2}}

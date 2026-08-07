@@ -1,15 +1,17 @@
 # Session Summary — sectorpulse-spec
 
-_Generated: 2026-08-07 19:43 UTC_
+_Generated: 2026-08-07 21:30 UTC_
 
 ## Overview
 
 - **Mode:** build
-- **Experiments:** 0 total (0 kept, 0 reverted, 0 errors)
+- **Experiments:** 3 total (1 kept, 2 reverted, 0 errors)
 
 ## What Was Built
 
-No experiments were kept this session.
+| # | Hypothesis | Category | Delta | PR |
+|---|------------|----------|-------|----|
+| 3 | Add SPAStaticFiles class to serve React SPA for client-side  | EXPLORE | +0.0001 | #6 |
 
 ## What Was Deferred
 
