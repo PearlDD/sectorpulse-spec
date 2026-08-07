@@ -1,13 +1,31 @@
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Optional, Tuple
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+from dotenv import load_dotenv
 
-from app.api.routes import router
-from app.db.database import init_db
-from app.scheduler import setup_scheduler, shutdown_scheduler
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+
+from fastapi import FastAPI  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+from fastapi.staticfiles import StaticFiles  # noqa: E402
+
+from app.api.routes import router  # noqa: E402
+from app.db.database import init_db  # noqa: E402
+from app.scheduler import setup_scheduler, shutdown_scheduler  # noqa: E402
+
+_frontend_dist = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
+
+
+class SPAStaticFiles(StaticFiles):
+    def lookup_path(
+        self, path: str
+    ) -> Tuple[str, Optional[os.stat_result]]:
+        full_path, stat_result = super().lookup_path(path)
+        if stat_result is None:
+            return super().lookup_path("./index.html")
+        return full_path, stat_result
 
 
 @asynccontextmanager
@@ -30,8 +48,6 @@ app.add_middleware(
 
 app.include_router(router)
 
-# Mount frontend static files AFTER API routes so /api/* takes priority.
-# Only mount if the dist directory exists (allows dev mode without a build).
-_frontend_dist = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
+# SPA static file serving — must be after API routes
 if _frontend_dist.is_dir():
-    app.mount("/", StaticFiles(directory=str(_frontend_dist), html=True), name="spa")
+    app.mount("/", SPAStaticFiles(directory=str(_frontend_dist), html=True), name="spa")
