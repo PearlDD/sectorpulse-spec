@@ -54,3 +54,9 @@
 {"type": "discover.completed", "timestamp": "2026-08-07T19:38:02.379931+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"language": "unknown", "framework": null, "dimensions": ["syntax_check", "observability"]}}
 {"type": "eval.started", "timestamp": "2026-08-07T19:40:57.460238+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"command": "python3 eval/score.py"}}
 {"type": "eval.completed", "timestamp": "2026-08-07T19:41:13.014522+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"composite": 0.6008336363636364, "passed": true, "dimensions": 12}}
+{"type": "detect", "timestamp": "2026-08-07T19:41:26.616526+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"state": "has_factory"}}
+{"type": "agent.started", "timestamp": "2026-08-07T19:41:38.818138+00:00", "project": "sectorpulse-spec", "agent": "archivist", "data": {"task": "Final archive for the SectorPulse build at /Users/pearl/factory-projects/sectorpulse-spec.\n1. Read full git log to see everything that was built (12 hypotheses, H1-H12)\n2. Update the project dashboard"}}
+{"type": "agent.completed", "timestamp": "2026-08-07T19:42:54.358280+00:00", "project": "sectorpulse-spec", "agent": "archivist", "data": {"return_code": 0}}
+{"type": "sprint.completed", "timestamp": "2026-08-07T19:42:59.343081+00:00", "project": "sectorpulse-spec", "agent": null, "data": {}}
+{"type": "summary.started", "timestamp": "2026-08-07T19:43:03.631455+00:00", "project": "sectorpulse-spec", "agent": null, "data": {}}
+{"type": "summary.completed", "timestamp": "2026-08-07T19:43:03.634506+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"kept": 0, "reverted": 0, "errored": 0, "backlog": 2}}

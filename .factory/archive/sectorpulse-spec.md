@@ -119,6 +119,17 @@ SectorPulse is a full-stack web app (FastAPI + React/Vite) wrapping an existing 
 ## Strategy
 - See: strategies/sectorpulse-spec-2026-08-07.md
 
+## Cycle Summary (2026-08-07)
+- **Build Cycle**: Complete greenfield build in single session
+- **Hypotheses**: 12/12 KEPT, 0 reverted — 100% keep rate
+- **Total Tests**: 88 (all passing)
+- **Frontend**: Compiles clean, 0 warnings
+- **Factory Baseline**: Initialized at 0.60 score via `eval/run_eval.py`
+- **Commits**: 13 total (12 hypotheses + 1 factory init)
+- **Key Constraints Enforced**: No dates in agent prompts, claude-sonnet-4-6 (not opus), graceful FRED degradation, no LangGraph
+- **Architecture**: FastAPI monorepo serving React static files, SQLite WAL persistence, APScheduler daily runs
+- **Outcome**: Production-ready MVP — all 8 spec features implemented, tested, and integrated
+
 ## Recent Experiments
 - H12 — Static serving + build script + integration tests (KEEP, 2026-08-07) **FINAL**
 - H11 — Sector scorecard, history browser, report detail (KEEP, 2026-08-07)

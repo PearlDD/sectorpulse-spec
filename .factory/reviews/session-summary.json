@@ -1,0 +1,17 @@
+{
+  "project_name": "sectorpulse-spec",
+  "generated_at": "2026-08-07 19:43:03.633852+00:00",
+  "mode": "build",
+  "experiments_kept": [],
+  "experiments_reverted": [],
+  "experiments_errored": [],
+  "backlog_remaining": [
+    "**ANTHROPIC_API_KEY** \u2014 user must provide their Anthropic API key. Required for all agent pipeline functionality (macro analyst, sector analyst, portfolio allocator, narrative generator). Set in `.env` file. Without this key, no analysis can run.",
+    "**FRED_API_KEY** \u2014 user must register for a free key at https://fred.stlouisfed.org/docs/api/api_key.html and set it in `.env`. Without this key, macro indicators (PMI, yield curve, credit spreads, VIX) will be unavailable and analysis quality will be reduced. The app degrades gracefully \u2014 RRG and price-based analysis still work."
+  ],
+  "guard_violations": [],
+  "needs_human_input": [],
+  "score_start": null,
+  "score_end": null,
+  "total_cost_usd": null
+}

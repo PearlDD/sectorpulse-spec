@@ -1,6 +1,6 @@
 {
   "project_name": "sectorpulse-spec",
-  "generated_at": "2026-08-07 15:36:23.168996",
+  "generated_at": "2026-08-07 15:42:47.038378",
   "total_experiments": 0,
   "keep_count": 0,
   "revert_count": 0,
@@ -63,7 +63,7 @@
     {
       "source": ".factory/archive/experiments/sectorpulse-spec-H1.md",
       "content": "---\ntags:\n  - factory\n  - experiment\n  - sectorpulse-spec\nproject: sectorpulse-spec\nexperiment_id: H1\nverdict: KEEP\nscore_delta: N/A\ndate: 2026-08-07\nsource: factory-archivist\n---\n\n# Experiment H1: Project scaffold + eval harness\n\n## Hypothesis\nCreate the monorepo structure (backend FastAPI + frontend React/Vite/TS/Tailwind), eval harness, .env.example, and root config. Both `uvicorn app.main:app` and `npm run dev` should work.\n\n## Result\n**KEEP** \u2014 CEO verdict: PROCEED. All scaffold requirement",
-      "timestamp": "2026-08-07 15:36:23.158801",
+      "timestamp": "2026-08-07 15:42:47.034883",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -72,7 +72,7 @@
     {
       "source": ".factory/archive/experiments/sectorpulse-spec-H10.md",
       "content": "---\ntags:\n  - factory\n  - experiment\n  - sectorpulse-spec\nproject: sectorpulse-spec\nexperiment_id: H10\nverdict: KEEP\nscore_delta: N/A\ndate: 2026-08-07\nsource: factory-archivist\n---\n\n# Experiment #H10: RRG chart page with quadrant visualization\n\n## Hypothesis\nBuild RRG (Relative Rotation Graph) chart page with four-quadrant layout, sector trails, and improving-sector callouts.\n\n## Result\n**KEEP** \u2014 compiles clean, RRG visualization renders quadrants and trails.\n\n## What Changed\n- `frontend/src/pa",
-      "timestamp": "2026-08-07 15:36:23.159209",
+      "timestamp": "2026-08-07 15:42:47.035034",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -81,7 +81,7 @@
     {
       "source": ".factory/archive/experiments/sectorpulse-spec-H11.md",
       "content": "---\ntags:\n  - factory\n  - experiment\n  - sectorpulse-spec\nproject: sectorpulse-spec\nexperiment_id: H11\nverdict: KEEP\nscore_delta: N/A\ndate: 2026-08-07\nsource: factory-archivist\n---\n\n# Experiment #H11: Sector scorecard, history browser, and report detail pages\n\n## Hypothesis\nAdd sector scorecard table, historical report browser, and full report detail page with pie chart allocation visualization.\n\n## Result\n**KEEP** \u2014 compiles clean, all three pages render correctly.\n\n## What Changed\n- `frontend/",
-      "timestamp": "2026-08-07 15:36:23.159666",
+      "timestamp": "2026-08-07 15:42:47.035206",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -90,7 +90,7 @@
     {
       "source": ".factory/archive/experiments/sectorpulse-spec-H12.md",
       "content": "---\ntags:\n  - factory\n  - experiment\n  - sectorpulse-spec\nproject: sectorpulse-spec\nexperiment_id: H12\nverdict: KEEP\nscore_delta: N/A\ndate: 2026-08-07\nsource: factory-archivist\n---\n\n# Experiment #H12: Static serving, build script, and integration tests\n\n## Hypothesis\nAdd static file serving for the React frontend (SPA fallback), a production build script, and integration tests covering the full API surface.\n\n## Result\n**KEEP** \u2014 88 total tests pass. CEO verdict: PROCEED, zero issues. Final build",
-      "timestamp": "2026-08-07 15:36:23.160267",
+      "timestamp": "2026-08-07 15:42:47.035732",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -99,7 +99,7 @@
     {
       "source": ".factory/archive/experiments/sectorpulse-spec-H2.md",
       "content": "---\ntags:\n  - factory\n  - experiment\n  - sectorpulse-spec\nproject: sectorpulse-spec\nexperiment_id: H2\nverdict: KEEP\nscore_delta: N/A\ndate: 2026-08-07\nsource: factory-archivist\n---\n\n# Experiment H2: Port config + data fetcher (adapted for latest-only)\n\n## Hypothesis\nPort config.py (removing backtest constants) and create a latest-only data fetcher with graceful FRED degradation.\n\n## Result\n**KEEP** \u2014 CEO verdict: PROCEED, zero issues found.\n\n## What Changed\n- `backend/app/config.py` \u2014 ported from",
-      "timestamp": "2026-08-07 15:36:23.161157",
+      "timestamp": "2026-08-07 15:42:47.035872",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -108,7 +108,7 @@
     {
       "source": ".factory/archive/experiments/sectorpulse-spec-H3.md",
       "content": "---\ntags:\n  - factory\n  - experiment\n  - sectorpulse-spec\nproject: sectorpulse-spec\nexperiment_id: H3\nverdict: KEEP\nscore_delta: N/A\ndate: 2026-08-07\nsource: factory-archivist\n---\n\n# Experiment H3: Port 3 agent files + switch to claude-sonnet-4-6\n\n## Hypothesis\nCopy macro_analyst, sector_analyst, and portfolio_allocator from existing repo. Switch model from claude-opus-4-6 to claude-sonnet-4-6, update imports, remove decision_date parameter.\n\n## Result\n**KEEP** \u2014 CEO verdict: PROCEED, zero issue",
-      "timestamp": "2026-08-07 15:36:23.162131",
+      "timestamp": "2026-08-07 15:42:47.036012",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -117,7 +117,7 @@
     {
       "source": ".factory/archive/experiments/sectorpulse-spec-H4.md",
       "content": "---\ntags:\n  - factory\n  - experiment\n  - sectorpulse-spec\nproject: sectorpulse-spec\nexperiment_id: H4\nverdict: KEEP\nscore_delta: N/A\ndate: 2026-08-07\nsource: factory-archivist\n---\n\n# Experiment H4: RRG quadrant math + oversold detector\n\n## Hypothesis\nImplement JdK RS-Ratio and RS-Momentum using double-smoothed WMA for RRG quadrant classification. Build oversold detector comparing price momentum against fundamental cycle alignment scores. Both pure math, no LLM calls.\n\n## Result\n**KEEP** \u2014 CEO ve",
-      "timestamp": "2026-08-07 15:36:23.162888",
+      "timestamp": "2026-08-07 15:42:47.036144",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -126,7 +126,7 @@
     {
       "source": ".factory/archive/experiments/sectorpulse-spec-H5.md",
       "content": "---\ntags:\n  - factory\n  - experiment\n  - sectorpulse-spec\nproject: sectorpulse-spec\nexperiment_id: H5\nverdict: KEEP\nscore_delta: N/A\ndate: 2026-08-07\nsource: factory-archivist\n---\n\n# Experiment H5: SQLite persistence layer\n\n## Hypothesis\nCreate async SQLite persistence layer with WAL mode, SQLAlchemy models, and CRUD operations for report storage.\n\n## Result\n**KEEP** \u2014 CEO verdict: PROCEED, zero issues found.\n\n## What Changed\n- `backend/app/db/database.py` \u2014 async SQLAlchemy engine using sqlite+",
-      "timestamp": "2026-08-07 15:36:23.163312",
+      "timestamp": "2026-08-07 15:42:47.036275",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -135,7 +135,7 @@
     {
       "source": ".factory/archive/experiments/sectorpulse-spec-H6.md",
       "content": "---\ntags:\n  - factory\n  - experiment\n  - sectorpulse-spec\nproject: sectorpulse-spec\nexperiment_id: H6\nverdict: KEEP\ndate: 2026-08-07\nsource: factory-archivist\n---\n\n# Experiment H6: Orchestrator + Narrative Generator\n\n## Hypothesis\nAdd an orchestrator that runs the sequential pipeline (macro \u2192 sector \u2192 portfolio \u2192 narrative) and a narrative generator that produces human-readable analysis summaries, bundled in an AnalysisResult.\n\n## Result\n**KEEP** \u2014 63 total tests passing. CEO verdict: PROCEED, z",
-      "timestamp": "2026-08-07 15:36:23.164171",
+      "timestamp": "2026-08-07 15:42:47.036407",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -144,7 +144,7 @@
     {
       "source": ".factory/archive/experiments/sectorpulse-spec-H7.md",
       "content": "---\ntags:\n  - factory\n  - experiment\n  - sectorpulse-spec\nproject: sectorpulse-spec\nexperiment_id: H7\nverdict: KEEP\nscore_delta: N/A\ndate: 2026-08-07\nsource: factory-archivist\n---\n\n# Experiment #H7: FastAPI API routes with CORS and rate limiting\n\n## Hypothesis\nAdding 7 REST API endpoints with CORS middleware and rate limiting (midnight ET reset) completes the backend API surface needed for the frontend.\n\n## Result\n**KEEP** \u2014 76 tests passing (up from 63). All 7 endpoints built. CEO verdict: PROC",
-      "timestamp": "2026-08-07 15:36:23.165034",
+      "timestamp": "2026-08-07 15:42:47.036543",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -153,7 +153,7 @@
     {
       "source": ".factory/archive/experiments/sectorpulse-spec-H8.md",
       "content": "---\ntags:\n  - factory\n  - experiment\n  - sectorpulse-spec\nproject: sectorpulse-spec\nexperiment_id: H8\nverdict: KEEP\nscore_delta: N/A\ndate: 2026-08-07\nsource: factory-archivist\n---\n\n# Experiment #H8: APScheduler daily run + lifespan integration\n\n## Hypothesis\nAdd APScheduler-based daily scheduled analysis run with FastAPI lifespan integration and conditional startup.\n\n## Result\n**KEEP** \u2014 compiles clean, scheduler integrates with lifespan context manager.\n\n## What Changed\n- `backend/app/scheduler",
-      "timestamp": "2026-08-07 15:36:23.165484",
+      "timestamp": "2026-08-07 15:42:47.036678",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -162,7 +162,7 @@
     {
       "source": ".factory/archive/experiments/sectorpulse-spec-H9.md",
       "content": "---\ntags:\n  - factory\n  - experiment\n  - sectorpulse-spec\nproject: sectorpulse-spec\nexperiment_id: H9\nverdict: KEEP\nscore_delta: N/A\ndate: 2026-08-07\nsource: factory-archivist\n---\n\n# Experiment #H9: App shell, API client, and dashboard page\n\n## Hypothesis\nCreate React app shell with navigation, typed API client, and dashboard page with hot sectors, narrative display, and manual run button.\n\n## Result\n**KEEP** \u2014 compiles clean, dashboard functional with API integration.\n\n## What Changed\n- `fronte",
-      "timestamp": "2026-08-07 15:36:23.165906",
+      "timestamp": "2026-08-07 15:42:47.036808",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -171,7 +171,7 @@
     {
       "source": ".factory/archive/patterns/patterns.md",
       "content": "---\ntags:\n  - factory\n  - patterns\nsource: factory-archivist\n---\n\n# Cross-Project Patterns\n\n## Clean Greenfield Builds with Zero Reverts\nObserved in sectorpulse-spec (H1\u2013H11): 11 consecutive KEEP verdicts with zero reverts across 6 phases. Contributing factors: thorough upfront research phase producing 5 source notes, phased build plan with dependency ordering, and strong test coverage at each step (76+ tests by Phase 6). Pattern: investing in research and strategy before building pays off in ze",
-      "timestamp": "2026-08-07 15:36:23.166348",
+      "timestamp": "2026-08-07 15:42:47.036942",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -180,7 +180,7 @@
     {
       "source": ".factory/archive/sectorpulse-spec.md",
       "content": "---\ntags:\n  - factory\n  - project\n  - sectorpulse-spec\nsource: factory-archivist\n---\n\n# Factory: sectorpulse-spec\n\n## Status\n- **State**: COMPLETE\n- **Current Score**: N/A (greenfield build, no scoring)\n- **Experiments Run**: 12\n- **Kept**: 12, **Reverted**: 0\n- **Build Plan**: 12 hypotheses across 7 phases \u2014 ALL COMPLETE\n\n## Project Overview\nSectorPulse is a full-stack web app (FastAPI + React/Vite) wrapping an existing V2 sector rotation agent pipeline. Provides AI-driven sector rotation analy",
-      "timestamp": "2026-08-07 15:36:23.166776",
+      "timestamp": "2026-08-07 15:42:47.037074",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -189,7 +189,7 @@
     {
       "source": ".factory/archive/sources/architecture-patterns.md",
       "content": "---\ntags:\n  - factory\n  - source\n  - sectorpulse-spec\nsource: factory-archivist\ndate: 2026-08-07\n---\n\n# Architecture Patterns \u2014 FastAPI + React Monorepo\n\n## Findings\n\n### Serving Strategy\n- FastAPI serves built React app as static files from `frontend/dist/`\n- Dev: Vite on port 5173, proxy to FastAPI on 8000\n- Prod: `npm run build` \u2192 FastAPI mounts `StaticFiles(directory=\"frontend/dist\", html=True)`\n- API routes prefixed `/api/` to avoid SPA catch-all conflict\n\n### API Design\n- GET /api/reports ",
-      "timestamp": "2026-08-07 15:36:23.167194",
+      "timestamp": "2026-08-07 15:42:47.037209",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -198,7 +198,7 @@
     {
       "source": ".factory/archive/sources/existing-agent-code-reuse.md",
       "content": "---\ntags:\n  - factory\n  - source\n  - sectorpulse-spec\nsource: factory-archivist\ndate: 2026-08-07\n---\n\n# Existing Agent Code Reuse Analysis\n\n## Findings\n\nThe V2 sector rotation agent pipeline in `sector-rotation-analytics-agent-vs-automation-arc` contains reusable components for SectorPulse:\n\n### Copy As-Is (4 files)\n- `src/config.py` \u2014 SECTOR_TICKERS, FRED_SERIES, CYCLE_SECTOR_MAP, get_available_sectors(). Remove backtest-specific constants.\n- `src/agent_v2/agents/macro_analyst.py` \u2014 CyclePhase ",
-      "timestamp": "2026-08-07 15:36:23.167640",
+      "timestamp": "2026-08-07 15:42:47.037390",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -207,7 +207,7 @@
     {
       "source": ".factory/archive/sources/mvp-phasing.md",
       "content": "---\ntags:\n  - factory\n  - source\n  - sectorpulse-spec\nsource: factory-archivist\ndate: 2026-08-07\n---\n\n# MVP Phasing Recommendation\n\n## Findings\n\n### Phase 1: Core Pipeline (build first)\n1. Port 4 reusable agent files (macro_analyst, sector_analyst, portfolio_allocator, config)\n2. Adapt fetcher for latest-only data\n3. Simplified orchestrator (single-run, no triple-median)\n4. SQLite persistence (reports table)\n5. FastAPI API routes (GET /reports, GET /reports/latest)\n6. Minimal React frontend: das",
-      "timestamp": "2026-08-07 15:36:23.168142",
+      "timestamp": "2026-08-07 15:42:47.037915",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -216,7 +216,7 @@
     {
       "source": ".factory/archive/sources/pitfalls-and-mitigations.md",
       "content": "---\ntags:\n  - factory\n  - source\n  - sectorpulse-spec\nsource: factory-archivist\ndate: 2026-08-07\n---\n\n# Pitfalls and Mitigations\n\n## Findings\n\n### yfinance Rate Limits\n- Yahoo Finance throttles at ~2000 req/hour. Only 12 tickers per run, so low risk.\n- Mitigation: 1-2s delays between tickers, cache in SQLite, existing _retry_with_backoff.\n- Fallback: yahoo_fin or Polygon.io free tier if yfinance breaks.\n\n### FRED API\n- Requires free key. 120 req/min limit (generous for 9 series).\n- Mitigation: D",
-      "timestamp": "2026-08-07 15:36:23.168509",
+      "timestamp": "2026-08-07 15:42:47.038079",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -225,7 +225,7 @@
     {
       "source": ".factory/archive/sources/rrg-algorithm.md",
       "content": "---\ntags:\n  - factory\n  - source\n  - sectorpulse-spec\nsource: factory-archivist\ndate: 2026-08-07\n---\n\n# RRG (Relative Rotation Graph) Algorithm\n\n## Findings\n\nRRG is pure math \u2014 no LLM needed. Based on Julius de Kempenaer methodology.\n\n### Algorithm\n1. **Relative Strength**: RS = (sector_price / benchmark_price) * 100 (SPY as benchmark)\n2. **JdK RS-Ratio**: Double-smoothed WMA(10) of RS, normalized around 100\n3. **JdK RS-Momentum**: Rate of change of RS-Ratio, normalized around 100\n4. **Quadrant ",
-      "timestamp": "2026-08-07 15:36:23.168585",
+      "timestamp": "2026-08-07 15:42:47.038167",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
@@ -234,7 +234,7 @@
     {
       "source": ".factory/archive/strategies/sectorpulse-spec-2026-08-07.md",
       "content": "---\ntags:\n  - factory\n  - strategy\n  - sectorpulse-spec\ndate: 2026-08-07\nsource: factory-archivist\n---\n\n# Strategy: sectorpulse-spec \u2014 2026-08-07\n\n## CEO Verdict: PROCEED\n\nPlan approved with no issues. 12 hypotheses across 7 build phases with clear dependency graph.\n\n## Build Plan (12 Hypotheses)\n\n| Phase | Hypotheses | Description | Parallel |\n|-------|-----------|-------------|----------|\n| 1 | H1 | Project scaffold + eval harness | \u2014 |\n| 2 | H2, H5 | Config+fetcher + SQLite layer | Yes |\n| 3 ",
-      "timestamp": "2026-08-07 15:36:23.168944",
+      "timestamp": "2026-08-07 15:42:47.038327",
       "project": "sectorpulse-spec",
       "tags": [
         "archive"
