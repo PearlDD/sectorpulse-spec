@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.agents.orchestrator import run_analysis
 from app.db.crud import create_report, get_latest_report, get_report_by_id, get_reports
 from app.db.database import get_db
+from app.scheduler import get_scheduler
 
 logger = logging.getLogger(__name__)
 
@@ -140,6 +141,21 @@ async def sectors(db: AsyncSession = Depends(get_db)) -> dict:
         "sector_scores": report.sector_scores,
         "allocation": report.allocation,
     }
+
+
+@router.get("/schedule")
+async def schedule() -> dict:
+    """Return scheduler status and next scheduled run time."""
+    scheduler = get_scheduler()
+    if scheduler is None:
+        return {"active": False, "next_run": None}
+
+    job = scheduler.get_job("daily_analysis")
+    next_run = None
+    if job and job.next_run_time:
+        next_run = job.next_run_time.isoformat()
+
+    return {"active": True, "next_run": next_run}
 
 
 @router.get("/sectors/rrg")
