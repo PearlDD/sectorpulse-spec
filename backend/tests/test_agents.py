@@ -151,8 +151,10 @@ def test_no_decision_date_parameter():
 
 def test_model_is_sonnet():
     """Verify all agents use claude-sonnet-4-6, not opus."""
+    # orchestrator.py delegates to other agents — it doesn't instantiate an LLM
+    skip_files = {"__init__.py", "orchestrator.py"}
     for agent_file in AGENTS_DIR.glob("*.py"):
-        if agent_file.name == "__init__.py":
+        if agent_file.name in skip_files:
             continue
         content = agent_file.read_text()
         assert "claude-opus-4-6" not in content, (
