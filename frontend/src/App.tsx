@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
+import RRGChart from "./pages/RRGChart";
 
 function Placeholder({ title }: { title: string }) {
   return (
@@ -54,7 +55,7 @@ export default function App() {
       <Layout>
         <Routes>
           <Route path="/" element={<Dashboard />} />
-          <Route path="/rrg" element={<Placeholder title="RRG Chart" />} />
+          <Route path="/rrg" element={<RRGChart />} />
           <Route path="/history" element={<Placeholder title="History" />} />
           <Route
             path="/report/:id"
