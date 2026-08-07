@@ -1,5 +1,5 @@
 {
-  "total": 0.6008336363636364,
+  "total": 0.6293496363636364,
   "results": [
     {
       "name": "tests",
@@ -52,38 +52,38 @@
     },
     {
       "name": "capability_surface",
-      "score": 0.613,
+      "score": 0.6174,
       "weight": 0.14,
       "passed": true,
-      "details": "surface=141 (modules=23, public_fns=118, entry_points=0), target=230"
+      "details": "surface=142 (modules=23, public_fns=119, entry_points=0), target=230"
     },
     {
       "name": "experiment_diversity",
       "score": 0.5,
       "weight": 0.11,
       "passed": true,
-      "details": "Only 0 experiments, too few to judge"
+      "details": "Only 1 experiments, too few to judge"
     },
     {
       "name": "observability",
-      "score": 0.379,
+      "score": 0.374,
       "weight": 0.1,
       "passed": false,
-      "details": "observability_score=0.38, function_coverage=0.21, structured_logging=False"
+      "details": "observability_score=0.37, function_coverage=0.21, structured_logging=False"
     },
     {
       "name": "research_grounding",
-      "score": 0.445,
+      "score": 0.8,
       "weight": 0.08,
       "passed": true,
-      "details": "sources=5 (archive), utilization=0.00, research_report=yes, doc_ratio=1.00 (12/1), citation_ratio=0.00"
+      "details": "sources=8 (archive), utilization=1.00, research_report=yes, doc_ratio=1.00 (13/2), citation_ratio=0.00"
     },
     {
       "name": "factory_effectiveness",
       "score": 0.5,
       "weight": 0.07,
       "passed": true,
-      "details": "Only 0 experiments, too few to judge"
+      "details": "Only 1 experiments, too few to judge"
     }
   ],
   "guard_violations": [],

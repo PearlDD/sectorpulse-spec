@@ -60,3 +60,8 @@
 {"type": "sprint.completed", "timestamp": "2026-08-07T19:42:59.343081+00:00", "project": "sectorpulse-spec", "agent": null, "data": {}}
 {"type": "summary.started", "timestamp": "2026-08-07T19:43:03.631455+00:00", "project": "sectorpulse-spec", "agent": null, "data": {}}
 {"type": "summary.completed", "timestamp": "2026-08-07T19:43:03.634506+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"kept": 0, "reverted": 0, "errored": 0, "backlog": 2}}
+{"type": "eval.started", "timestamp": "2026-08-07T21:26:41.420324+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"command": "python3 eval/score.py"}}
+{"type": "eval.completed", "timestamp": "2026-08-07T21:26:53.336397+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"composite": 0.6292336363636364, "passed": true, "dimensions": 12}}
+{"type": "experiment.begin", "timestamp": "2026-08-07T21:27:00.601063+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"exp_id": 2, "hypothesis": "Fix frontend static serving with SPAStaticFiles fallback (retry)"}}
+{"type": "eval.started", "timestamp": "2026-08-07T21:27:09.271719+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"command": "python3 eval/score.py"}}
+{"type": "eval.completed", "timestamp": "2026-08-07T21:27:20.179967+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"composite": 0.6293496363636364, "passed": true, "dimensions": 12}}
