@@ -65,3 +65,6 @@
 {"type": "experiment.begin", "timestamp": "2026-08-07T21:27:00.601063+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"exp_id": 2, "hypothesis": "Fix frontend static serving with SPAStaticFiles fallback (retry)"}}
 {"type": "eval.started", "timestamp": "2026-08-07T21:27:09.271719+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"command": "python3 eval/score.py"}}
 {"type": "eval.completed", "timestamp": "2026-08-07T21:27:20.179967+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"composite": 0.6293496363636364, "passed": true, "dimensions": 12}}
+{"type": "verdict.overridden", "timestamp": "2026-08-07T21:27:48.767955+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"exp_id": 2, "original_verdict": "keep", "new_verdict": "revert", "reason": "score_direction; anti_pattern"}}
+{"type": "experiment.finalize", "timestamp": "2026-08-07T21:27:48.770442+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"exp_id": 2, "verdict": "revert", "hypothesis": "Fix frontend static serving with SPAStaticFiles fallback"}}
+{"type": "experiment.begin", "timestamp": "2026-08-07T21:28:12.315912+00:00", "project": "sectorpulse-spec", "agent": null, "data": {"exp_id": 3, "hypothesis": "Add SPAStaticFiles class to serve React SPA for client-side routes"}}
