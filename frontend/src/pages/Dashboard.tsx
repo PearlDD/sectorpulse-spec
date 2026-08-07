@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { fetchLatestReport, type Report } from "../api/client";
+import { fetchLatestReport, fetchRRG, type Report, type RRGPoint } from "../api/client";
 import RunButton from "../components/RunButton";
+import SectorScorecard from "./SectorScorecard";
 
 const RISK_COLORS: Record<string, string> = {
   low: "bg-green-600",
@@ -16,9 +17,13 @@ function riskColor(level: string): string {
 export default function Dashboard() {
   const [report, setReport] = useState<Report | null | undefined>(undefined);
   const [runsUsed, setRunsUsed] = useState(0);
+  const [rrg, setRrg] = useState<Record<string, RRGPoint> | null>(null);
 
   useEffect(() => {
     fetchLatestReport().then(setReport);
+    fetchRRG()
+      .then((d) => setRrg(d.rrg_data ?? null))
+      .catch(() => setRrg(null));
   }, []);
 
   function handleRunComplete(newReport: Report) {
@@ -131,6 +136,9 @@ export default function Dashboard() {
           </div>
         </section>
       )}
+
+      {/* Sector Scorecard */}
+      <SectorScorecard rrg={rrg} />
     </div>
   );
 }

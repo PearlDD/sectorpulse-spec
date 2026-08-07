@@ -1,14 +1,8 @@
 import { BrowserRouter, Routes, Route, NavLink } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import RRGChart from "./pages/RRGChart";
-
-function Placeholder({ title }: { title: string }) {
-  return (
-    <div className="flex items-center justify-center py-32 text-slate-400">
-      {title} — coming soon
-    </div>
-  );
-}
+import History from "./pages/History";
+import Report from "./pages/Report";
 
 const NAV_ITEMS = [
   { to: "/", label: "Dashboard" },
@@ -56,11 +50,8 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/rrg" element={<RRGChart />} />
-          <Route path="/history" element={<Placeholder title="History" />} />
-          <Route
-            path="/report/:id"
-            element={<Placeholder title="Report Detail" />}
-          />
+          <Route path="/history" element={<History />} />
+          <Route path="/report/:id" element={<Report />} />
         </Routes>
       </Layout>
     </BrowserRouter>
