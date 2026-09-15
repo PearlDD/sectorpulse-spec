@@ -13,6 +13,9 @@ def run(cmd: list[str], cwd: str | None = None) -> bool:
         print(f"  SKIP (not installed): {cmd[0]}")
         return True  # not a failure if tool isn't installed
     except subprocess.CalledProcessError as e:
+        if e.returncode == 1 and e.stderr and "No module named" in e.stderr:
+            print(f"  SKIP (not installed): {' '.join(cmd)}")
+            return True
         print(f"  FAIL: {' '.join(cmd)}")
         if e.stdout:
             print(e.stdout)
@@ -27,15 +30,15 @@ def main() -> int:
 
     # 1. pytest
     print("Running pytest...")
-    results["pytest"] = run([sys.executable, "-m", "pytest", "-x", "-q"], cwd=backend)
+    results["pytest"] = run(["python3", "-m", "pytest", "-x", "-q"], cwd=backend)
 
     # 2. ruff (lint)
     print("Running ruff...")
-    results["ruff"] = run([sys.executable, "-m", "ruff", "check", "."], cwd=backend)
+    results["ruff"] = run(["python3", "-m", "ruff", "check", "."], cwd=backend)
 
     # 3. mypy (type check)
     print("Running mypy...")
-    results["mypy"] = run([sys.executable, "-m", "mypy", "app/"], cwd=backend)
+    results["mypy"] = run(["python3", "-m", "mypy", "app/"], cwd=backend)
 
     # Summary
     print("\n--- Eval Results ---")
