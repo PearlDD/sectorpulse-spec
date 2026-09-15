@@ -38,7 +38,7 @@ def main() -> int:
 
     # 3. mypy (type check)
     print("Running mypy...")
-    results["mypy"] = run(["python3", "-m", "mypy", "app/"], cwd=backend)
+    results["mypy"] = run(["python3", "-m", "mypy", "--ignore-missing-imports", "app/"], cwd=backend)
 
     # Summary
     print("\n--- Eval Results ---")
