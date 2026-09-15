@@ -1,9 +1,51 @@
+import logging
+import uuid
+from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
+from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.staticfiles import StaticFiles
 
-app = FastAPI(title="SectorPulse", version="0.1.0")
+from app.logging_config import request_id_var, setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------------------
+# Request ID middleware
+# ---------------------------------------------------------------------------
+
+class RequestIDMiddleware(BaseHTTPMiddleware):
+    """Generates (or reads) a unique request ID and stores it in a ContextVar."""
+
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        rid = request.headers.get("x-request-id") or str(uuid.uuid4())
+        token = request_id_var.set(rid)
+        try:
+            response = await call_next(request)
+            response.headers["X-Request-ID"] = rid
+            return response
+        finally:
+            request_id_var.reset(token)
+
+
+# ---------------------------------------------------------------------------
+# App lifecycle
+# ---------------------------------------------------------------------------
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("SectorPulse starting up")
+    yield
+    logger.info("SectorPulse shutting down")
+
+
+app = FastAPI(title="SectorPulse", version="0.1.0", lifespan=lifespan)
+app.add_middleware(RequestIDMiddleware)
 
 
 # ---------------------------------------------------------------------------
@@ -12,6 +54,7 @@ app = FastAPI(title="SectorPulse", version="0.1.0")
 
 @app.get("/api/health")
 async def health() -> dict:
+    logger.info("Health check")
     return {"status": "ok"}
 
 
