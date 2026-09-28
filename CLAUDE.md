@@ -1,6 +1,9 @@
 # SectorPulse implementation status
 
-See README.md for the current product, setup, limitations, and methodology.
-FastAPI and React/TypeScript/Vite/Tailwind/Recharts are implemented.
-AI agents, RRG, server-side saved runs, and database persistence are not implemented.
-Never send dates to an LLM. Never commit .env or credentials.
+Read README.md and VERIFICATION.md for capabilities and limitations.
+FastAPI, React, SQLite snapshots/runs/jobs, background refresh, separate strength/risk/macro,
+a custom relative-strength map, retrospective holdout and optional AI explanation are implemented.
+This is a single-instance private research MVP, not a certified point-in-time backtest.
+Never pass dates, raw history or arbitrary provider strings to an LLM.
+AI must never change deterministic results. Never commit .env, credentials or local databases.
+Preserve saved inputs and failure states. Do not tune rules to improve the recorded holdout.

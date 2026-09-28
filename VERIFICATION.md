@@ -1,36 +1,42 @@
-# Verification
+# Verification — v0.3
 
-Verified on 2026-09-24 with Python 3.12.3 and Node 25.6.1. The documented target is Python 3.12 and Node 24 LTS.
+Verified 2026-09-28 using Python 3.12.3 and Node 25.6.1. Documented installation target: Python 3.12 and Node 24 LTS on macOS/Linux.
 
-- `pytest`: **29 passed**. Covers original config/launch-date/no-key behavior plus explicit cutoffs, future-row filtering, retry backoff/exhaustion, empty results, partial ticker failures, FRED vintage query parameters, missing values, secret-safe logs, score formula/order/ties, missing sessions, stale inputs, cycle phases/bonuses, API demo, API validation/failure, and price-only live-mode analysis.
-- `ruff check .`: passed.
-- `mypy app/`: passed for all 10 application source files.
-- `npm run typecheck`: passed with strict TypeScript enabled.
-- `npm run lint`: passed.
-- `npm run build`: passed; split output chunks are approximately 192 KB and 376 KB before compression, with no chunk-size warning.
-- `python eval/score.py`: all six checks passed.
-- `bash -n run.sh` and `docker compose config --quiet`: passed.
-- FastAPI production static serving: `/` returned the compiled React app; demo analysis returned 11 ranked sectors and 12 price series over HTTP.
-- Browser verification: live data refresh, missing FRED state, partial price coverage, demo refresh, timestamp updates, sector selection/rationale/chart changes, and desktop layout. Production mobile check at a 390px viewport reported document client width and scroll width both 375px (15px browser scrollbar), confirming no page-level horizontal overflow. The ranking table scrolls within its panel.
+## Automated checks
 
-Live Yahoo checks returned data but only two sectors met the strict common-session requirement at the tested cutoff; the other nine were visibly excluded. Provider completeness is not guaranteed. Synthetic mode showed all 11 sectors. FRED live-success behavior was not checked because no key was supplied; HTTP-mocked tests verify vintage parameters and failure behavior.
+- **43 pytest tests passed**: configuration, launch eligibility, explicit historical cutoff/future filtering, no-FRED behavior, provider retries/empty responses/partial failures, vintage parameters, common-session scoring, independent macro/risk, low-coverage gating, snapshot serialization/hash/replay, concurrent job deduplication/queue cap, failure preservation, restart interruption, exclusive worker lock, real subprocess timeout, rotation formula, chronological signal selection/next-close entry/costs/forward gaps, consistent synthetic history, AI whitelist/schema and separate success/failure persistence, and the asynchronous API lifecycle.
+- Compatibility price/macro/analysis reads reject a mismatched requested cutoff rather than returning another date's research.
+- Ruff, mypy, strict frontend TypeScript, ESLint and Vite production build passed through `python eval/score.py`.
+- `git diff --check`, `bash -n run.sh`, `docker compose config --quiet`: passed.
+- One upstream Starlette/httpx TestClient deprecation warning remains; no warnings are hidden. No runtime failure observed from this warning.
 
-The installed Starlette test client emits one upstream deprecation warning about its httpx adapter. Tests pass; runtime API behavior is unaffected. No warnings are suppressed.
+## Real data and browser checks
 
-Docker configuration syntax passed, but a container build/run was not tested because the Docker daemon was not running. No external deployment occurred. Browser inspection was manual; no automated frontend interaction test suite is claimed.
+A live run requested on 2026-09-28 with cutoff **2025-12-31** returned **11/11 comparable sectors**. FRED was unconfigured and visibly unavailable; the report was correctly marked partial. Synthetic mode also completed without provider keys. The original sanitized inputs and report persisted in local SQLite. Replay returned `matches_saved: true` and fingerprint `a66c3274e52b863f67481f665ae010aa84a8b3d20ac37b5461dd572bc08d7abe`.
 
-## Changed files
+The live holdout evaluated **18 periods**, skipped **0**, and returned mean excess **−0.0555 percentage points** with a 55.6% outperformance frequency. This does not establish an edge. The rule was not tuned to improve that result. [Saved validation evidence](eval/reports/validation-2025-12-31.json) contains dates, parameters and every evaluated period; raw provider prices and the private database are not committed.
 
-- `backend/app/config.py`: corrected macro labels and added sector display names.
-- `backend/app/data/fetcher.py`: historical cutoff, provider validation/retries, partial isolation, FRED vintage support, safe diagnostics.
-- `backend/app/data/demo.py` (new): explicitly synthetic, deterministic fixtures.
-- `backend/app/analysis.py` (new): common-window relative returns, cycle heuristic, score components, exclusions.
-- `backend/app/main.py`: health/prices/macro/analysis API, useful errors, timestamps, production frontend serving.
-- `backend/tests/test_mvp.py` (new), existing test formatting: 29 total tests.
-- `backend/pyproject.toml`, `backend/requirements.lock` (new): usable runtime/test dependencies, lint/type settings, pinned environment.
-- `frontend/src/App.tsx`, `index.css`, `main.tsx`: interactive responsive dashboard and lazy-loaded bundle.
-- `frontend/tsconfig.app.json`, `package.json`, `index.html`: strict typing, check command, product metadata.
-- `eval/score.py`: frontend verification and failure on missing check tools.
-- `.env.example`, `.gitignore`: optional server-only key and secret/cache exclusions.
-- `run.sh`, `Dockerfile`, `compose.yaml`, `.dockerignore` (new): local setup and undeployed hosting configuration.
-- `README.md`, `BASELINE.md`, `VERIFICATION.md` (new), `CLAUDE.md`: accurate capabilities, methodology, setup, deployment, and remaining gaps.
+Manual browser checks covered the live saved report, missing FRED state, history, separate risk/macro, custom map, per-period validation, and successful reproducibility verification. An explicit AI request returned content that failed schema validation safely and left the deterministic report unchanged; after page reload its failed state remained visible. The request now uses Anthropic structured outputs after that failure; a real retry awaits explicit transmission/billing approval. Successful end-to-end AI output is **not** claimed. Automated mocked tests verify successful parsing/persistence and failure isolation.
+
+At a 390×844 viewport, document client width and scroll width were both 375px (browser scrollbar accounts for the difference): no page-level horizontal overflow. Responsive tables remain horizontally scrollable within their panels. Browser testing was manual, not an automated end-to-end suite.
+
+## Unverified / operational limits
+
+- FRED real-key success not exercised. Vintage parameters and missing-key/provider-failure paths are mocked in tests.
+- Docker daemon was unavailable, so configuration syntax passed but image build/container startup were not verified.
+- No external deployment, account creation or production traffic test occurred.
+- Single local SQLite instance/dispatcher only; no multi-replica or failover support.
+- No certified historical point-in-time feed, full exchange calendar, calibrated trading costs or prospective untouched validation.
+
+## Main changed files
+
+- `backend/app/db/store.py`: durable queue, snapshots, runs and separate explanations.
+- `backend/app/services/jobs.py`: worker isolation, deadlines, recovery and safe failures.
+- `backend/app/data/snapshot.py`, `demo.py`, `fetcher.py`: saved inputs, consistent demo history and longer historical acquisition.
+- `backend/app/analysis.py`, `validation.py`: independent strength/risk/macro, map and temporal validation.
+- `backend/app/services/explanation.py`: explicit date-free numeric whitelist and validated optional prose.
+- `backend/app/main.py`: queued refresh API, journal/replay routes and cached compatibility reads.
+- `backend/tests/test_reliability.py`, `test_mvp.py`: reliability and research contract tests.
+- `frontend/src/App.tsx`, `api.ts`, `ResearchCharts.tsx`, `index.css`: working journal/dashboard, durable task state, independent evidence and charts.
+- Docker/Compose/environment exclusions: persistent non-root storage and optional server-only AI key.
+- README (English/Chinese), CLAUDE and this record: setup, methodology, deployment and accurate limitations.

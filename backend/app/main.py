@@ -1,183 +1,250 @@
 import logging
 import os
-from datetime import UTC, date, datetime
+from contextlib import asynccontextmanager
+from datetime import date
 from pathlib import Path
 from typing import Literal
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, ConfigDict
 
-from app.analysis import score_sectors
-from app.config import FRED_SERIES, FRED_SERIES_V2
-from app.data.demo import demo_macro, demo_prices
-from app.data.fetcher import fetch_macro_indicators, fetch_sector_prices, resolve_date
+from app.analysis import METHOD_VERSION
+from app.data.fetcher import resolve_date
+from app.db.store import Store
+from app.services.explanation import configured
+from app.services.jobs import JobRunner, calculate
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s %(message)s")
-# HTTP clients can log URLs containing provider credentials.
 logging.getLogger("httpx").setLevel(logging.WARNING)
-app = FastAPI(title="SectorPulse", version="0.2.0")
 Mode = Literal["live", "demo"]
 
 
-def cutoff(value: date | None) -> date:
+class RunRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    as_of_date: date | None = None
+    mode: Mode = "live"
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    path = os.getenv(
+        "SECTORPULSE_DB",
+        str(Path(__file__).resolve().parents[2] / "data" / "sectorpulse.db"),
+    )
+    store = Store(str(Path(path).resolve()))
+    runner = JobRunner(store)
+    runner.start()
+    app.state.store, app.state.runner = store, runner
     try:
-        return resolve_date(value)
-    except ValueError as exc:
+        yield
+    finally:
+        runner.close()
+
+
+app = FastAPI(title="SectorPulse", version="0.3.0", lifespan=lifespan)
+
+
+def storage(request: Request) -> Store:
+    return request.app.state.store
+
+
+def require_run(store: Store, run_id: str) -> dict:
+    try:
+        return store.run(run_id)
+    except KeyError:
         raise HTTPException(
-            422, detail={"code": "invalid_date", "message": str(exc)}
+            404, detail={"code": "run_not_found", "message": "Saved run not found"}
         ) from None
 
 
-def prices_for(end: date, mode: Mode):
+def enqueue(store: Store, kind: str, params: dict) -> dict:
     try:
-        return demo_prices(end) if mode == "demo" else fetch_sector_prices(end)
-    except RuntimeError:
+        job, reused = store.enqueue(kind, params)
+    except ValueError:
         raise HTTPException(
-            503,
+            429,
             detail={
-                "code": "prices_unavailable",
-                "message": "Price provider unavailable. Retry later or select synthetic demo.",
+                "code": "queue_full",
+                "message": "Worker queue is full. Read saved results and retry later.",
             },
         ) from None
-
-
-def macro_for(end: date, mode: Mode):
-    return demo_macro(end) if mode == "demo" else fetch_macro_indicators(end)
-
-
-UNITS = {
-    "MANUFACTURING_EMPLOYMENT": "thousand persons",
-    "YIELD_CURVE": "percentage points",
-    "INITIAL_CLAIMS": "persons",
-    "OECD_CLI": "index",
-    "UNEMPLOYMENT": "%",
-    "CPI": "index (1982–84=100)",
-    "HY_SPREAD": "%",
-    "IG_SPREAD": "%",
-    "VIX": "index",
-}
-
-
-def macro_payload(data, end: date, mode: Mode) -> dict:
-    entries = []
-    for name, series_id in {**FRED_SERIES, **FRED_SERIES_V2}.items():
-        series = data.get(name)
-        available = series is not None and not series.empty
-        entries.append(
-            {
-                "name": name,
-                "series_id": series_id,
-                "unit": UNITS[name],
-                "value": float(series.iloc[-1]) if available else None,
-                "observation_date": series.index[-1].date().isoformat()
-                if available
-                else None,
-                "age_days": (pd_timestamp(end) - series.index[-1]).days
-                if available
-                else None,
-                "status": "available" if available else "unavailable",
-            }
-        )
-    return {
-        "as_of_date": end.isoformat(),
-        "source": "synthetic" if mode == "demo" else "FRED/ALFRED",
-        "status": "available"
-        if len(data) == len(entries)
-        else "partial"
-        if data
-        else "unavailable",
-        "reason": "Synthetic demo inputs"
-        if mode == "demo"
-        else "FRED_API_KEY is missing"
-        if not os.getenv("FRED_API_KEY", "").strip()
-        else "Vintage-limited observations; individual series may be unavailable",
-        "indicators": entries,
-    }
-
-
-def pd_timestamp(value):
-    import pandas as pd
-
-    return pd.Timestamp(value)
+    return {"job": job, "deduplicated": reused}
 
 
 @app.get("/api/health")
 def health() -> dict:
     return {
         "status": "ok",
-        "version": "0.2.0",
+        "version": "0.3.0",
         "fred_configured": bool(os.getenv("FRED_API_KEY", "").strip()),
-        "ai_enabled": False,
+        "ai_enabled": configured(),
+        "method_version": METHOD_VERSION,
     }
 
 
-@app.get("/api/prices")
-def prices(as_of_date: date | None = None, mode: Mode = "live") -> dict:
-    end = cutoff(as_of_date)
-    frame = prices_for(end, mode)
-    return {
-        "as_of_date": end.isoformat(),
-        "source": "synthetic" if mode == "demo" else "Yahoo Finance (adjusted close)",
-        "unavailable": frame.attrs.get("unavailable", {}),
-        "series": {
-            ticker: [
-                {"date": day.date().isoformat(), "close": float(value)}
-                for day, value in frame[ticker].dropna().items()
-            ]
-            for ticker in frame.columns
+@app.post("/api/runs", status_code=202)
+def start_run(body: RunRequest, request: Request) -> dict:
+    try:
+        end = resolve_date(body.as_of_date)
+    except ValueError as exc:
+        raise HTTPException(
+            422, detail={"code": "invalid_date", "message": str(exc)}
+        ) from None
+    return enqueue(
+        storage(request),
+        "analysis",
+        {
+            "as_of_date": end.isoformat(),
+            "mode": body.mode,
+            "method_version": METHOD_VERSION,
         },
+    )
+
+
+@app.get("/api/jobs")
+def jobs(request: Request) -> list[dict]:
+    return storage(request).jobs()
+
+
+@app.get("/api/jobs/{job_id}")
+def job(job_id: str, request: Request) -> dict:
+    try:
+        return storage(request).job(job_id)
+    except KeyError:
+        raise HTTPException(
+            404, detail={"code": "job_not_found", "message": "Task not found"}
+        ) from None
+
+
+@app.get("/api/runs")
+def runs(
+    request: Request,
+    mode: Mode | None = None,
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+) -> list[dict]:
+    return storage(request).runs(mode, limit, offset)
+
+
+@app.get("/api/runs/latest")
+def latest(request: Request, mode: Mode = "live") -> dict:
+    rows = storage(request).runs(mode, 1)
+    if not rows:
+        raise HTTPException(
+            404,
+            detail={
+                "code": "no_saved_runs",
+                "message": "No saved analysis for this data source. Refresh to create one.",
+            },
+        )
+    return storage(request).run(rows[0]["id"])
+
+
+@app.get("/api/runs/{run_id}")
+def run(run_id: str, request: Request) -> dict:
+    return require_run(storage(request), run_id)
+
+
+@app.get("/api/runs/{run_id}/snapshot")
+def snapshot(run_id: str, request: Request) -> dict:
+    record = require_run(storage(request), run_id)
+    return storage(request).read_snapshot(record["snapshot_id"])
+
+
+@app.get("/api/runs/{run_id}/replay")
+def replay(run_id: str, request: Request) -> dict:
+    record = require_run(storage(request), run_id)
+    if record["method_version"] != METHOD_VERSION:
+        raise HTTPException(
+            409,
+            detail={
+                "code": "method_version_mismatch",
+                "message": "Replay requires the original calculation version.",
+            },
+        )
+    saved = storage(request).read_snapshot(record["snapshot_id"])
+    result = calculate(saved["payload"])
+    matches = all(record.get(key) == value for key, value in result.items())
+    return {
+        "snapshot_sha256": saved["sha256"],
+        "matches_saved": matches,
+        "result": result,
+    }
+
+
+@app.get("/api/runs/{run_id}/explanation")
+def read_explanation(run_id: str, request: Request) -> dict:
+    require_run(storage(request), run_id)
+    result = storage(request).explanation(run_id)
+    return {
+        "status": "available" if result else "not_requested",
+        "enabled": configured(),
+        "explanation": result,
+    }
+
+
+@app.post("/api/runs/{run_id}/explanation", status_code=202)
+def start_explanation(run_id: str, request: Request) -> dict:
+    require_run(storage(request), run_id)
+    if not configured():
+        raise HTTPException(
+            503,
+            detail={
+                "code": "ai_not_configured",
+                "message": "Optional AI requires a server-side ANTHROPIC_API_KEY. Calculations are unaffected.",
+            },
+        )
+    if storage(request).explanation(run_id):
+        return {"cached": True, "explanation": storage(request).explanation(run_id)}
+    return enqueue(storage(request), "explanation", {"run_id": run_id})
+
+
+# Compatibility reads: cached only, never start provider calls on GET.
+@app.get("/api/analysis")
+def analysis(
+    request: Request, mode: Mode = "live", as_of_date: date | None = None
+) -> dict:
+    record = latest(request, mode)
+    if as_of_date and record["as_of_date"] != as_of_date.isoformat():
+        raise HTTPException(
+            404,
+            detail={
+                "code": "no_matching_run",
+                "message": "Use POST /api/runs to request this date.",
+            },
+        )
+    return record
+
+
+@app.get("/api/prices")
+def prices(
+    request: Request, mode: Mode = "live", as_of_date: date | None = None
+) -> dict:
+    record = analysis(request, mode, as_of_date)
+    return {
+        "run_id": record["id"],
+        "as_of_date": record["as_of_date"],
+        "source": record["source"],
+        "series": record["prices"],
+        "unavailable": record["excluded"],
     }
 
 
 @app.get("/api/macro")
-def macro(as_of_date: date | None = None, mode: Mode = "live") -> dict:
-    end = cutoff(as_of_date)
-    return macro_payload(macro_for(end, mode), end, mode)
-
-
-@app.get("/api/analysis")
-def analysis(as_of_date: date | None = None, mode: Mode = "live") -> dict:
-    end = cutoff(as_of_date)
-    frame = prices_for(end, mode)
-    indicators = macro_for(end, mode)
-    try:
-        result = score_sectors(frame, indicators, end)
-    except ValueError as exc:
-        raise HTTPException(
-            503, detail={"code": "insufficient_benchmark", "message": str(exc)}
-        ) from None
+def macro(
+    request: Request, mode: Mode = "live", as_of_date: date | None = None
+) -> dict:
+    record = analysis(request, mode, as_of_date)
     return {
-        **result,
-        "as_of_date": end.isoformat(),
-        "mode": mode,
-        "status": "partial" if result["excluded"] else "available",
-        "updated_at": datetime.now(UTC).isoformat(),
-        "prices": {
-            ticker: [
-                {"date": day.date().isoformat(), "close": float(value)}
-                for day, value in frame[ticker].dropna().items()
-            ]
-            for ticker in frame.columns
-        },
-        "source": "Synthetic demonstration data"
-        if mode == "demo"
-        else "Yahoo Finance adjusted prices; FRED vintage macro",
-        "macro": macro_payload(indicators, end, mode),
-        "ai": {
-            "status": "disabled",
-            "reason": "No LLM is called. Rankings are deterministic.",
-        },
-        "limitations": [
-            "Educational analytics, not financial advice or a prediction.",
-            "Yahoo adjusted history may be revised; this is not a certified point-in-time backtest.",
-            "No RRG, database persistence, or AI narrative is implemented.",
-        ],
+        "run_id": record["id"],
+        "as_of_date": record["as_of_date"],
+        **record["macro"],
     }
 
 
-# Serve the compiled React app on the same origin as the API in production.
 static_dir = Path(__file__).resolve().parents[2] / "frontend" / "dist"
 if static_dir.is_dir():
     app.mount("/", StaticFiles(directory=static_dir, html=True), name="dashboard")

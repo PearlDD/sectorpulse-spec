@@ -76,9 +76,11 @@ def _download_ticker(ticker: str, start: date, end: date) -> pd.DataFrame:
     return frame
 
 
-def fetch_sector_prices(as_of_date: date | None = None) -> pd.DataFrame:
+def fetch_sector_prices(
+    as_of_date: date | None = None, lookback_days: int = 150
+) -> pd.DataFrame:
     end = resolve_date(as_of_date)
-    start = end - timedelta(days=150)
+    start = end - timedelta(days=lookback_days)
     frames = []
     unavailable = {}
     for ticker in [*get_available_sectors(end), "SPY"]:

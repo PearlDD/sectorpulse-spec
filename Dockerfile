@@ -11,7 +11,7 @@ COPY backend/ ./backend/
 RUN pip install --no-cache-dir -r backend/requirements.lock && pip install --no-deps ./backend
 COPY --from=frontend /build/frontend/dist ./frontend/dist
 # Editable install preserves the repository-relative static directory.
-RUN pip install --no-deps -e ./backend && useradd --create-home sectorpulse
+RUN pip install --no-deps -e ./backend && useradd --create-home sectorpulse && mkdir -p /app/data && chown sectorpulse:sectorpulse /app/data
 USER sectorpulse
 ENV PYTHONUNBUFFERED=1
 EXPOSE 8000

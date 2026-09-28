@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sectorpulse"
-version = "0.1.0"
-description = "AI-powered sector rotation analytics"
+version = "0.3.0"
+description = "Auditable sector research with optional AI explanations"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.110",

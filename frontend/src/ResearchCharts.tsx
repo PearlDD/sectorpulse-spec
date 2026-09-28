@@ -1,0 +1,16 @@
+import { CartesianGrid, Legend, Line, LineChart, ReferenceDot, ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis } from 'recharts'
+import type { Analysis } from './api'
+
+export function PriceChart({ data, ticker, measure }: { data: Analysis; ticker: string; measure: string }) {
+  const spy = new Map((data.prices.SPY || []).map(p => [p.date, p.close]))
+  const common = (data.prices[ticker] || []).filter(p => spy.has(p.date))
+  const first = common[0]
+  const rows = common.map(p => ({ date: p.date, sector: measure === 'indexed' ? 100 * p.close / first.close : p.close, SPY: measure === 'indexed' ? 100 * spy.get(p.date)! / spy.get(first.date)! : spy.get(p.date) }))
+  return <div className="chart" aria-label={`${ticker} price comparison with SPY`}><ResponsiveContainer width="100%" height="100%"><LineChart data={rows} margin={{ top: 12, right: 15, left: 0, bottom: 0 }}><CartesianGrid stroke="#253344" strokeDasharray="3 3" /><XAxis dataKey="date" tickFormatter={value => value.slice(5)} minTickGap={35} stroke="#9aaabc" fontSize={11} /><YAxis domain={['auto', 'auto']} tickFormatter={value => Number(value).toFixed(0)} width={45} stroke="#9aaabc" fontSize={11} /><Tooltip contentStyle={{ background: '#142030', border: '1px solid #33465c' }} formatter={value => Number(value).toFixed(2)} /><Legend /><Line dataKey="sector" name={ticker} stroke="#5be0ba" dot={false} isAnimationActive={false} /><Line dataKey="SPY" stroke="#a4a0ff" dot={false} isAnimationActive={false} /></LineChart></ResponsiveContainer></div>
+}
+
+export function RotationChart({ data, selected }: { data: Analysis; selected: string }) {
+  const points = Object.values(data.rotation).flatMap(item => item.trail)
+  const extent = (key: 'strength' | 'momentum') => Math.max(1, ...points.map(p => Math.abs(p[key]))) * 1.2
+  return <div className="rotation-chart" aria-label="Relative strength and momentum map"><ResponsiveContainer width="100%" height="100%"><ScatterChart margin={{ top: 25, right: 40, bottom: 25, left: 15 }}><CartesianGrid stroke="#253344" /><XAxis type="number" dataKey="strength" name="Relative strength" unit="%" domain={[-extent('strength'), extent('strength')]} tickFormatter={v => Number(v).toFixed(1)} stroke="#9aaabc" fontSize={11} label={{ value: '20-session ratio return (%)', position: 'bottom', fill: '#9aaabc', fontSize: 11 }} /><YAxis type="number" dataKey="momentum" name="Momentum change" unit=" pp" domain={[-extent('momentum'), extent('momentum')]} tickFormatter={v => Number(v).toFixed(1)} stroke="#9aaabc" fontSize={11} /><ReferenceLine x={0} stroke="#71869c" /><ReferenceLine y={0} stroke="#71869c" /><Tooltip contentStyle={{ background: '#142030', border: '1px solid #33465c' }} formatter={v => Number(v).toFixed(2)} />{Object.entries(data.rotation).map(([ticker, item]) => <Scatter key={ticker} name={ticker} data={item.trail} line fill={ticker === selected ? '#5be0ba' : '#8c9bdd'} opacity={ticker === selected ? 1 : .45} isAnimationActive={false} />)}{Object.entries(data.rotation).map(([ticker, item]) => <ReferenceDot key={ticker} x={item.strength} y={item.momentum} r={3} fill={ticker === selected ? '#5be0ba' : '#c1c4ff'} label={{ value: ticker, position: 'top', fill: '#c1d0df', fontSize: 10 }} />)}</ScatterChart></ResponsiveContainer></div>
+}
