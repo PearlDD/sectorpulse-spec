@@ -2,7 +2,6 @@
 
 from datetime import date
 
-
 # ---------------------------------------------------------------------------
 # Sector ETFs — 11 SPDR Select Sector ETFs + SPY benchmark
 # ---------------------------------------------------------------------------
@@ -45,9 +44,7 @@ def get_available_sectors(as_of: date) -> list[str]:
     The returned list is sorted alphabetically for deterministic ordering.
     """
     return sorted(
-        ticker
-        for ticker, launch in SECTOR_LAUNCH_DATES.items()
-        if launch <= as_of
+        ticker for ticker, launch in SECTOR_LAUNCH_DATES.items() if launch <= as_of
     )
 
 
@@ -55,19 +52,19 @@ def get_available_sectors(as_of: date) -> list[str]:
 # FRED macro indicator series IDs
 # ---------------------------------------------------------------------------
 FRED_SERIES: dict[str, str] = {
-    "ISM_PMI": "MANEMP",       # ISM Manufacturing PMI (proxy via manufacturing employment)
-    "YIELD_CURVE": "T10Y2Y",   # 10-Year minus 2-Year Treasury spread
+    "MANUFACTURING_EMPLOYMENT": "MANEMP",  # Thousands of manufacturing employees
+    "YIELD_CURVE": "T10Y2Y",  # 10-Year minus 2-Year Treasury spread
     "INITIAL_CLAIMS": "ICSA",  # Initial jobless claims
-    "LEI": "USALOLITONOSTSAM",  # Leading Economic Index (OECD CLI proxy)
+    "OECD_CLI": "USALOLITONOSTSAM",  # OECD composite leading indicator
     "UNEMPLOYMENT": "UNRATE",  # Unemployment rate
-    "CPI": "CPIAUCSL",        # CPI for All Urban Consumers
+    "CPI": "CPIAUCSL",  # CPI for All Urban Consumers
 }
 
 # V2 additional series — credit spreads and VIX proxy
 FRED_SERIES_V2: dict[str, str] = {
-    "HY_SPREAD": "BAMLH0A0HYM2",   # ICE BofA US High Yield OAS
-    "IG_SPREAD": "BAMLC0A0CM",      # ICE BofA US Corporate OAS
-    "VIX": "VIXCLS",               # CBOE VIX
+    "HY_SPREAD": "BAMLH0A0HYM2",  # ICE BofA US High Yield OAS
+    "IG_SPREAD": "BAMLC0A0CM",  # ICE BofA US Corporate OAS
+    "VIX": "VIXCLS",  # CBOE VIX
 }
 
 
@@ -82,3 +79,23 @@ CYCLE_SECTOR_MAP: dict[str, list[str]] = {
     "slowdown": ["XLE", "XLV", "XLP", "XLU", "XLB"],
     "contraction": ["XLV", "XLP", "XLU", "XLK", "XLRE"],
 }
+
+SECTOR_NAMES = dict(
+    zip(
+        SECTOR_TICKERS,
+        [
+            "Materials",
+            "Communication Services",
+            "Energy",
+            "Financials",
+            "Industrials",
+            "Technology",
+            "Consumer Staples",
+            "Real Estate",
+            "Utilities",
+            "Health Care",
+            "Consumer Discretionary",
+        ],
+        strict=True,
+    )
+)

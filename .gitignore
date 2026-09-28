@@ -21,3 +21,9 @@ frontend/dist/
 .idea/
 *.swp
 *.swo
+
+.env.*
+!.env.example
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
