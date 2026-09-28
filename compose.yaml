@@ -1,0 +1,15 @@
+services:
+  sectorpulse:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      FRED_API_KEY: ${FRED_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      SECTORPULSE_DB: /app/data/sectorpulse.db
+    volumes:
+      - research-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  research-data:

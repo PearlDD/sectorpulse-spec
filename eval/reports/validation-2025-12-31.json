@@ -1,0 +1,278 @@
+{
+  "as_of_date": "2025-12-31",
+  "mode": "live",
+  "method_version": "relative-strength-v2",
+  "updated_at": "2026-09-28T20:28:25.675812+00:00",
+  "coverage": {
+    "available": 11,
+    "expected": 11,
+    "minimum_fraction": 0.8
+  },
+  "validation": {
+    "folds": [
+      {
+        "basket_return_pct": -0.4993,
+        "benchmark_return_pct": 0.4876,
+        "entry_date": "2024-06-20",
+        "excess_return_pp": -0.9869,
+        "exit_date": "2024-07-19",
+        "selected": [
+          "XLK",
+          "XLU",
+          "XLC"
+        ],
+        "signal_date": "2024-06-18"
+      },
+      {
+        "basket_return_pct": -0.167,
+        "benchmark_return_pct": 0.6942,
+        "entry_date": "2024-07-22",
+        "excess_return_pp": -0.8613,
+        "exit_date": "2024-08-19",
+        "selected": [
+          "XLRE",
+          "XLY",
+          "XLK"
+        ],
+        "signal_date": "2024-07-19"
+      },
+      {
+        "basket_return_pct": 3.8079,
+        "benchmark_return_pct": 0.2833,
+        "entry_date": "2024-08-20",
+        "excess_return_pp": 3.5247,
+        "exit_date": "2024-09-18",
+        "selected": [
+          "XLRE",
+          "XLU",
+          "XLV"
+        ],
+        "signal_date": "2024-08-19"
+      },
+      {
+        "basket_return_pct": 3.027,
+        "benchmark_return_pct": 2.1041,
+        "entry_date": "2024-09-19",
+        "excess_return_pp": 0.9229,
+        "exit_date": "2024-10-17",
+        "selected": [
+          "XLRE",
+          "XLU",
+          "XLF"
+        ],
+        "signal_date": "2024-09-18"
+      },
+      {
+        "basket_return_pct": 0.2384,
+        "benchmark_return_pct": -0.0016,
+        "entry_date": "2024-10-18",
+        "excess_return_pp": 0.24,
+        "exit_date": "2024-11-15",
+        "selected": [
+          "XLU",
+          "XLI",
+          "XLF"
+        ],
+        "signal_date": "2024-10-17"
+      },
+      {
+        "basket_return_pct": 4.4579,
+        "benchmark_return_pct": 2.5442,
+        "entry_date": "2024-11-18",
+        "excess_return_pp": 1.9138,
+        "exit_date": "2024-12-17",
+        "selected": [
+          "XLY",
+          "XLF",
+          "XLC"
+        ],
+        "signal_date": "2024-11-15"
+      },
+      {
+        "basket_return_pct": 1.0787,
+        "benchmark_return_pct": 3.0066,
+        "entry_date": "2024-12-18",
+        "excess_return_pp": -1.9279,
+        "exit_date": "2025-01-21",
+        "selected": [
+          "XLY",
+          "XLC",
+          "XLK"
+        ],
+        "signal_date": "2024-12-17"
+      },
+      {
+        "basket_return_pct": 0.0085,
+        "benchmark_return_pct": 0.4497,
+        "entry_date": "2025-01-22",
+        "excess_return_pp": -0.4412,
+        "exit_date": "2025-02-20",
+        "selected": [
+          "XLY",
+          "XLE",
+          "XLF"
+        ],
+        "signal_date": "2025-01-21"
+      },
+      {
+        "basket_return_pct": -3.071,
+        "benchmark_return_pct": -5.9112,
+        "entry_date": "2025-02-21",
+        "excess_return_pp": 2.8402,
+        "exit_date": "2025-03-21",
+        "selected": [
+          "XLC",
+          "XLV",
+          "XLP"
+        ],
+        "signal_date": "2025-02-20"
+      },
+      {
+        "basket_return_pct": -7.1254,
+        "benchmark_return_pct": -8.3574,
+        "entry_date": "2025-03-24",
+        "excess_return_pp": 1.2321,
+        "exit_date": "2025-04-22",
+        "selected": [
+          "XLE",
+          "XLV",
+          "XLU"
+        ],
+        "signal_date": "2025-03-21"
+      },
+      {
+        "basket_return_pct": 1.241,
+        "benchmark_return_pct": 8.6604,
+        "entry_date": "2025-04-23",
+        "excess_return_pp": -7.4194,
+        "exit_date": "2025-05-21",
+        "selected": [
+          "XLP",
+          "XLU",
+          "XLRE"
+        ],
+        "signal_date": "2025-04-22"
+      },
+      {
+        "basket_return_pct": 3.6926,
+        "benchmark_return_pct": 3.0301,
+        "entry_date": "2025-05-22",
+        "excess_return_pp": 0.6626,
+        "exit_date": "2025-06-23",
+        "selected": [
+          "XLI",
+          "XLK",
+          "XLC"
+        ],
+        "signal_date": "2025-05-21"
+      },
+      {
+        "basket_return_pct": 4.5717,
+        "benchmark_return_pct": 4.3206,
+        "entry_date": "2025-06-24",
+        "excess_return_pp": 0.2511,
+        "exit_date": "2025-07-23",
+        "selected": [
+          "XLK",
+          "XLI",
+          "XLC"
+        ],
+        "signal_date": "2025-06-23"
+      },
+      {
+        "basket_return_pct": -0.6091,
+        "benchmark_return_pct": -0.0219,
+        "entry_date": "2025-07-24",
+        "excess_return_pp": -0.5872,
+        "exit_date": "2025-08-21",
+        "selected": [
+          "XLK",
+          "XLI",
+          "XLY"
+        ],
+        "signal_date": "2025-07-23"
+      },
+      {
+        "basket_return_pct": 4.6148,
+        "benchmark_return_pct": 3.4229,
+        "entry_date": "2025-08-22",
+        "excess_return_pp": 1.1919,
+        "exit_date": "2025-09-22",
+        "selected": [
+          "XLK",
+          "XLC",
+          "XLU"
+        ],
+        "signal_date": "2025-08-21"
+      },
+      {
+        "basket_return_pct": 0.4456,
+        "benchmark_return_pct": 1.0183,
+        "entry_date": "2025-09-23",
+        "excess_return_pp": -0.5727,
+        "exit_date": "2025-10-21",
+        "selected": [
+          "XLK",
+          "XLC",
+          "XLY"
+        ],
+        "signal_date": "2025-09-22"
+      },
+      {
+        "basket_return_pct": 0.0153,
+        "benchmark_return_pct": -0.9742,
+        "entry_date": "2025-10-22",
+        "excess_return_pp": 0.9895,
+        "exit_date": "2025-11-19",
+        "selected": [
+          "XLU",
+          "XLV",
+          "XLK"
+        ],
+        "signal_date": "2025-10-21"
+      },
+      {
+        "basket_return_pct": 2.4381,
+        "benchmark_return_pct": 4.4084,
+        "entry_date": "2025-11-20",
+        "excess_return_pp": -1.9703,
+        "exit_date": "2025-12-19",
+        "selected": [
+          "XLV",
+          "XLK",
+          "XLE"
+        ],
+        "signal_date": "2025-11-19"
+      }
+    ],
+    "kind": "retrospective temporal holdout",
+    "limitations": [
+      "No parameter tuning or training occurs. First 60% of sessions are reserved; only the final 40% is evaluated.",
+      "Signals use only prices through signal close. Entry is next observed close, exit 20 sessions after entry.",
+      "20 bps round-trip cost charged each period to both sector basket and SPY; illustrative, not calibrated.",
+      "Revised adjusted prices, changing sector definitions, and provider gaps prevent certified point-in-time claims.",
+      "This is retrospective, not a prospective untouched test. No significance or predictive-edge claim."
+    ],
+    "method_version": "relative-strength-v2",
+    "parameters": {
+      "holding_sessions": 20,
+      "reserved_prefix_fraction": 0.6,
+      "round_trip_cost_bps": 20,
+      "signal_spacing": 21,
+      "top_n": 3
+    },
+    "reason": "Fixed rule replay only; see limitations",
+    "reserved_through": "2024-06-17",
+    "skipped": [],
+    "status": "complete",
+    "summary": {
+      "mean_excess_pp": -0.0555,
+      "outperformance_fraction": 0.5555555555555556,
+      "periods": 18,
+      "skipped": 0
+    },
+    "version": "holdout-replay-v1"
+  },
+  "snapshot_sha256": "a66c3274e52b863f67481f665ae010aa84a8b3d20ac37b5461dd572bc08d7abe",
+  "note": "Retrospective fixed-rule check; no predictive advantage established. Raw provider history and private database are not distributed."
+}

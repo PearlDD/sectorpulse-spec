@@ -1,0 +1,15 @@
+export type Rank = { rank: number | null; ticker: string; name: string; score: number; relative_20d: number; relative_60d: number; absolute_20d: number; absolute_60d: number; volatility_60d: number; drawdown_60d: number; last_price: number }
+export type Indicator = { name: string; series_id: string; unit: string; value: number | null; observation_date: string | null; age_days: number | null; status: string }
+export type RunSummary = { id: string; snapshot_id: string; created_at: string; mode: string; as_of_date: string; status: string; method_version: string }
+export type Job = { id: string; kind: string; state: string; stage: string; created_at: string; updated_at: string; error_message: string | null; run_id: string | null; params: { mode?: string; as_of_date?: string; run_id?: string } }
+export type Validation = { status: string; kind: string; reason: string; reserved_through?: string; summary?: { periods: number; skipped: number; mean_excess_pp: number | null; outperformance_fraction: number | null }; folds: { signal_date: string; entry_date: string; exit_date: string; selected: string[]; basket_return_pct: number; benchmark_return_pct: number; excess_return_pp: number }[]; limitations: string[] }
+export type Analysis = { id: string; snapshot_id: string; ranking: Rank[]; excluded: Record<string, string>; context: { name: string; state: string; evidence: string }[]; mode: string; source: string; as_of_date: string; updated_at: string; price_date: string; window_start: string; methodology: string; method_version: string; ranking_status: string; status: string; coverage: {available: number; expected: number}; prices: Record<string, { date: string; close: number }[]>; macro: { status: string; reason: string; indicators: Indicator[] }; rotation: Record<string, { quadrant: string; strength: number; momentum: number; trail: {date: string; strength: number; momentum: number}[] }>; rotation_method: string; validation: Validation; limitations: string[] }
+export type Explanation = { enabled: boolean; status: string; explanation: null | { model: string; created_at: string; payload: { summary: string; observations: string[]; limitations: string[] } } }
+export class ApiError extends Error { status: number; constructor(status: number, message: string) { super(message); this.status = status } }
+export async function api<T>(path: string, body?: unknown): Promise<T> {
+  const response = await fetch(`/api${path}`, { method: body === undefined ? 'GET' : 'POST', headers: body === undefined ? undefined : { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) })
+  const data = await response.json().catch(() => null)
+  if (!response.ok) throw new ApiError(response.status, data?.detail?.message || (response.status === 422 ? 'Check the date and request inputs.' : `Request failed (${response.status}). Check the backend and retry.`))
+  return data as T
+}
+export const signed = (value: number) => `${value >= 0 ? '+' : ''}${value.toFixed(2)}`
