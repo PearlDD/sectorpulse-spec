@@ -11,7 +11,7 @@ def run(cmd: list[str], cwd: str | None = None) -> bool:
         return True
     except FileNotFoundError:
         print(f"  SKIP (not installed): {cmd[0]}")
-        return True  # not a failure if tool isn't installed
+        return False  # Missing verification tools must fail the check.
     except subprocess.CalledProcessError as e:
         print(f"  FAIL: {' '.join(cmd)}")
         if e.stdout:
@@ -36,6 +36,10 @@ def main() -> int:
     # 3. mypy (type check)
     print("Running mypy...")
     results["mypy"] = run([sys.executable, "-m", "mypy", "app/"], cwd=backend)
+
+    results["frontend types"] = run(["npm", "run", "typecheck"], cwd="frontend")
+    results["frontend lint"] = run(["npm", "run", "lint"], cwd="frontend")
+    results["frontend build"] = run(["npm", "run", "build"], cwd="frontend")
 
     # Summary
     print("\n--- Eval Results ---")
