@@ -2,145 +2,140 @@
 
 [中文说明](README.zh-CN.md) · [Verification](VERIFICATION.md) · [Original baseline](BASELINE.md)
 
-A working sector-rotation research dashboard using FastAPI and React/TypeScript/Vite/Tailwind/Recharts. It compares the 11 SPDR sector ETFs with SPY, shows economic inputs, and explains deterministic rankings. Educational research only; not investment advice or a forecast.
+A browser-based sector research dashboard for the 11 SPDR sector ETFs and SPY. FastAPI, React, TypeScript, Vite, Tailwind and Recharts remain the foundation. Version 0.3 adds saved evidence, background jobs, independent risk/macro context and fixed-rule validation.
 
-## One local setup flow
+**Educational research only. Not investment advice, a forecast, or a claim of predictive advantage.**
 
-Prerequisites: Python 3.12, Node.js 24 LTS, npm, and internet access for installation and live providers. Check out the branch containing this MVP, then run from the repository root on macOS/Linux:
+## Run locally
+
+Prerequisites: Python 3.12, Node.js 24 LTS, npm, macOS or Linux, and internet access for installation/live providers. From this repository:
 
 ```bash
-cd sectorpulse-spec
 bash run.sh
 ```
 
-Open **http://127.0.0.1:8000**. The script creates a local virtual environment, installs locked dependencies, builds React, and starts FastAPI serving both the dashboard and API. Stop with Ctrl+C. Subsequent starts without reinstalling:
+Open **http://127.0.0.1:8000**. This creates `.venv`, installs locked dependencies, builds React and starts FastAPI serving the UI and API together. Stop with Ctrl+C. Subsequent starts:
 
 ```bash
 .venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Live providers are the default. Select **Synthetic demo**, then **Refresh analysis**, for a reproducible demonstration without provider access. Synthetic data is always labeled and is never silently substituted for live data. Data source preference persists in browser localStorage. No login is required.
+Choose **Live providers** or **Synthetic demo**, choose a cutoff, then click **Refresh analysis**. Opening the dashboard only reads saved results; it does not fetch or bill a provider. Demo never silently replaces failed live data. Source preference is stored in browser localStorage.
 
-Optional FRED configuration: copy `.env.example` to `.env` in the repository root, put your FRED key in it, and restart the server. Alternatively set `FRED_API_KEY` in the server environment. No key goes into the frontend. No Anthropic key is needed. `.env` files are ignored by Git and Docker.
+Optional: copy `.env.example` to `.env` at the repository root and restart after setting `FRED_API_KEY` and/or `ANTHROPIC_API_KEY`. Both are server-only. Without FRED, prices still work and macro inputs show unavailable. Without Anthropic, deterministic research still works and the AI button is disabled. Never put keys in `VITE_*` variables or commit `.env`.
 
-## Implemented
+## What works
 
-- Health, price history, macro snapshot, and analysis endpoints; interactive refresh and completion timestamp.
-- Ranking table, sector detail explanations, indexed growth and adjusted-dollar charts against SPY.
-- Macro observation dates, units, ages, source attribution, partial coverage, missing key, loading, empty, and API-error states.
-- Per-ticker retries, empty-response retries, bounded provider calls, invalid-value rejection, historical cutoff, deterministic tie-breaking, and common-window comparisons without filling gaps.
-- Responsive layout; ranking tables scroll within their panel on narrow screens.
-- Browser preference storage only. There is no server-side database or saved-run history.
+- Explicit background refresh, visible stages and timestamps, durable queued/running/succeeded/failed/timed_out/interrupted states.
+- SQLite saved-run journal, original sanitized price/macro snapshots, SHA-256 fingerprints, and deterministic replay verification.
+- History selection, price and indexed-performance charts vs SPY, sector details, independent risk measurements, macro availability/age, and desktop/mobile layouts.
+- Comparable sector ranking with coverage gating, partial-data explanations and last successful reports retained after failures.
+- A transparent relative-strength map with trails; this is **not the proprietary JdK RRG calculation**.
+- Retrospective temporal holdout, inspectable signal/entry/exit periods, skipped-period reasons in JSON, illustrative costs and explicit limitations.
+- Optional Anthropic explanation requested separately. Its failure never changes the deterministic report.
 
-## Architecture
+## Calculation and reliability contract
 
-```text
-Browser (React + TypeScript + Recharts)
-  └─ /api → FastAPI
-               ├─ validated historical cutoff
-               ├─ Yahoo Finance adjusted prices
-               ├─ optional FRED/ALFRED macro observations
-               └─ deterministic scoring → structured JSON
-```
+`as_of_date` is inclusive and defaults to yesterday in America/New_York. Supported dates are 1999-01-01 through yesterday; unfinished current-day and future cutoffs are rejected. Yahoo's exclusive end is the following date and returned rows are filtered again. Providers have bounded timeouts and retries; invalid, nonpositive, nonfinite or duplicate observations are sanitized. No missing prices are forward-filled.
 
-The production build is served by FastAPI on the same origin. Development uses Vite's API proxy. Neither mode exposes API keys to the browser. Synthetic demo data follows the same analysis path but never calls live providers.
+The comparison window is SPY's latest 61 observed sessions, with the last observation no more than seven calendar days before cutoff. Every included sector needs all those dates. Sector launch dates determine eligibility. Fewer than 80% of eligible sectors means ordinal ranks and the leader label are withheld; no usable sectors or benchmark fails the task.
+
+For each window, excess return in percentage points is `(sector end/start − SPY end/start) × 100`. Strength is:
 
 ```text
-backend/app/config.py       ETF universe, sector names, cycle mapping
-backend/app/data/            Live fetchers and synthetic fixtures
-backend/app/analysis.py      Relative performance and cycle scoring
-backend/app/main.py          API routes and frontend hosting
-backend/tests/              Configuration, provider, scoring, API tests
-frontend/src/               Dashboard, charts, and responsive styles
-eval/score.py               Combined verification command
-run.sh                     Local installation, build, and launch
-Dockerfile / compose.yaml  Deployment configuration
+0.4 × 20-session excess return + 0.6 × 60-session excess return
 ```
 
-## Methodology and historical semantics
+Ties use ticker order. The weights are fixed descriptive heuristics, not fitted or validated as optimal. **The former fixed cycle bonus is removed.** Absolute returns, annualized 60-return volatility (sample standard deviation × √252), and maximum drawdown over the 61-price window remain separate. Labor, inflation, stress and yield-curve evidence do not alter ranks or force a business-cycle label. Stale/missing evidence is marked unavailable.
 
-`as_of_date` is inclusive, defaults to yesterday in America/New_York, and accepts 1999-01-01 through yesterday. Today's potentially unfinished session and future dates are rejected. Yahoo's exclusive end is requested as the next date, then the response is filtered again. Weekends use the last available session. Prices older than seven calendar days cannot establish a benchmark.
+The custom map uses X = 100 × ((sector/SPY)/(sector/SPY 20 sessions earlier) − 1); Y = X minus X five sessions earlier. Six recent points form a trail. Quadrants describe relative leadership and its change, not future direction.
 
-All ranked sectors must have valid positive prices on SPY's latest 61 observed sessions. Incomplete sectors are excluded with reasons. This strict policy may produce few rankings during partial provider outages; it does not manufacture missing observations.
+FRED restricts both observations and real-time vintage to cutoff using [official real-time parameters](https://fred.stlouisfed.org/docs/api/fred/series_observations.html). Yahoo adjusted history can be revised retrospectively. A snapshot preserves exactly what this app used, but is not proof that these prices were available historically. SPY observed sessions substitute for a full exchange calendar.
 
-For 20 and 60 sessions, excess return is `(sector end/start − SPY end/start) × 100`, in percentage points. Score is `0.4 × excess20 + 0.6 × excess60 + cycle bonus`. The bonus is two points for sectors in the existing cycle mapping, otherwise zero. Ties resolve alphabetically. This heuristic has not been validated for predictive performance.
+### Validation, without inflated claims
 
-Cycle context uses the unemployment change over three observation intervals and the latest 10Y−2Y Treasury spread:
+The fixed rule reserves the first 60% of history and evaluates the last 40%, requiring at least 504 benchmark observations. Every 21 sessions, it selects the top three using only information through the signal close, enters at the next observed close, and exits 20 sessions later. Missing forward observations skip the entire period; there is no replacement chosen using future information. Both the equally weighted basket and SPY pay an illustrative 20 bps round-trip cost per period. At least six usable periods and no more skipped than usable periods are needed for summary metrics.
 
-- Unemployment rise of at least 0.3 percentage points: contraction.
-- Otherwise an inverted spread: slowdown.
-- Otherwise unemployment decline of at least 0.2 points: recovery.
-- Otherwise expansion.
+This is a **retrospective temporal holdout**, not an untouched prospective test or a continuous portfolio simulation. It reports period mean excess return and outperformance frequency, not CAGR or a significance claim. There is no parameter tuning. See [the recorded live result](eval/reports/validation-2025-12-31.json): 18 periods, mean excess **−0.0555 percentage points**, which does not establish an advantage. Synthetic checks are mechanics demonstrations only.
 
-Missing or stale inputs yield unknown context and zero cycle bonus. Unemployment must be no older than 75 days and the spread no older than 10 days. Other macro series are displayed for context, not fed into this initial cycle rule. MANEMP is correctly labeled manufacturing employment, not PMI; the OECD CLI is not labeled the Conference Board LEI. CPI is an index level, not an inflation rate.
+### Optional AI
 
-FRED requests restrict both observations and the real-time vintage to the selected date, following [FRED's real-time API parameters](https://fred.stlouisfed.org/docs/api/fred/series_observations.html). A missing key or unavailable series does not prevent price analysis. Yahoo adjusted history can be revised after the requested date; this is not a certified point-in-time backtest. A date cutoff alone cannot eliminate all historical bias.
+A separate action sends an explicit whitelist of ticker symbols, numerical relative/absolute/risk measurements, coverage counts and synthetic-data status to Anthropic. No calendar dates, price history, snapshot metadata, credentials or free-form provider text enter the prompt. The API requests [Anthropic structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs); the output is schema-validated and stored separately with model, prompt version and input fingerprint. It cannot write rankings or snapshots. Date omission reduces one information channel; it does not prove an LLM is free of historical knowledge or hallucination. AI text remains unverified. No automatic AI request or billing retry occurs.
+
+## Architecture and storage
+
+```text
+React browser → FastAPI → SQLite journal
+                            └─ single dispatcher → bounded worker subprocess
+                                 ├─ Yahoo / optional FRED → saved input snapshot
+                                 ├─ strength + risk + macro + holdout → saved run
+                                 └─ optional Anthropic → separate explanation
+```
+
+Default storage is `<repository>/data/sectorpulse.db`; override with `SECTORPULSE_DB` using an absolute path. The database and credentials are ignored by Git/Docker. A single worker consumes a queue capped at four active jobs; duplicate active requests share a job. Analysis has a 15-minute wall limit, AI 90 seconds. Restart marks unfinished jobs interrupted; retry is explicit. Closing a browser does not cancel work while the server stays running. This is background processing, **not a scheduled refresh service**.
+
+Run **one Uvicorn worker and one instance per database**. A local file lock rejects concurrent dispatchers. SQLite needs a persistent local filesystem; this design is not for serverless ephemeral disks or multiple replicas. For backup, stop the app and copy the database, or use SQLite's online backup API. No automatic retention/deletion or migration from old PR report databases is implemented.
+
+| Area | Files |
+| --- | --- |
+| API and hosting | `backend/app/main.py` |
+| Universe, fetchers, snapshots | `backend/app/config.py`, `backend/app/data/` |
+| Strength, risk, macro, map | `backend/app/analysis.py` |
+| Temporal validation | `backend/app/validation.py` |
+| Journal and background worker | `backend/app/db/store.py`, `backend/app/services/jobs.py` |
+| Optional narrative | `backend/app/services/explanation.py` |
+| Browser UI and charts | `frontend/src/App.tsx`, `ResearchCharts.tsx`, `api.ts` |
 
 ## API
 
-Interactive schema: `/docs`. Dates use `YYYY-MM-DD`; `mode` is `live` or `demo`.
+Interactive schema: `/docs`. Dates use `YYYY-MM-DD`; modes are `live` and `demo`.
 
-| Endpoint | Result |
+| Endpoint | Behavior |
 | --- | --- |
-| `GET /api/health` | Process health and boolean feature configuration; no credentials |
-| `GET /api/prices?as_of_date=2025-01-31` | Adjusted prices by ticker, source, unavailable tickers |
-| `GET /api/macro?as_of_date=2025-01-31` | All macro indicators with explicit available/unavailable states |
-| `GET /api/analysis?as_of_date=2025-01-31&mode=demo` | Ranking, score components, context, charts, macro, exclusions, timestamps and limitations |
+| `GET /api/health` | Liveness, version and boolean key configuration; not provider readiness |
+| `POST /api/runs` | JSON `{"mode":"demo","as_of_date":"2025-12-31"}` → 202 with job |
+| `GET /api/jobs`, `/api/jobs/{id}` | Durable state, stage and safe errors |
+| `GET /api/runs?mode=live&limit=20&offset=0` | Paginated successful/partial reports |
+| `GET /api/runs/latest?mode=live`, `/api/runs/{id}` | Saved structured analysis |
+| `GET /api/runs/{id}/snapshot` | Original sanitized inputs and fingerprint |
+| `GET /api/runs/{id}/replay` | Recalculate saved inputs and compare with saved result |
+| `GET /api/runs/{id}/explanation` | Optional saved narrative and configuration state |
+| `POST /api/runs/{id}/explanation` | Queue explicit AI request or return cached explanation |
+| `GET /api/analysis`, `/api/prices`, `/api/macro` | Compatibility routes: read latest saved report; **never fetch** |
 
-Invalid input returns 422; complete price failure or an unusable benchmark returns 503 with a safe error code and message. Partial sector failures return the usable data with exclusions. Health is process liveness, not a guarantee of provider availability. Provider calls run in FastAPI's worker threads. Requests may take several minutes if every provider attempt times out; this MVP has no background job queue or shared cache.
+Compatibility routes accept mode and optional as_of_date; a date mismatch returns 404 rather than fetching. v0.2 clients must migrate refreshes to POST and poll job state. Invalid input returns 422, missing records 404, full queue 429, missing AI configuration 503, and incompatible replay method 409. Provider failures after acceptance are visible in the job, not disguised as an HTTP-success analysis.
 
-## Development and checks
+## Development and verification
 
-After local setup, from the repository root:
+After setup:
 
 ```bash
 .venv/bin/python eval/score.py
 ```
 
-This runs pytest, Ruff, mypy, frontend type checking, linting, and production build. Missing check tools fail rather than being treated as success.
-
-For hot reload, in two terminals:
-
-```bash
-.venv/bin/python -m uvicorn app.main:app --reload --port 8000
-```
-
-```bash
-cd frontend
-npm run dev
-```
-
-Open http://127.0.0.1:5173. Vite proxies `/api` to port 8000. Restart Vite if a filesystem watcher misses changes.
+Runs pytest, Ruff, mypy, strict TypeScript, ESLint and production build. For development, start the backend with `--reload --port 8000`, then in another terminal run `cd frontend && npm run dev`. Open http://127.0.0.1:5173; Vite proxies `/api` to port 8000.
 
 ## Deployment configuration (not deployed)
 
-The multi-stage Dockerfile builds the frontend and serves it with FastAPI on the same origin. This avoids browser CORS and keeps provider credentials on the server.
-
-Local container verification, with Docker running:
+Recommended: serve frontend and backend together using the supplied multi-stage Dockerfile:
 
 ```bash
 docker compose up --build
 ```
 
-Open http://127.0.0.1:8000. Compose binds only to localhost. It forwards an optional `FRED_API_KEY` from the environment or local `.env` without copying that file into the image.
+Open http://127.0.0.1:8000. Compose binds to localhost, passes optional keys server-side, and mounts the `research-data` named volume at `/app/data`. The image runs as a non-root user. Do not use `docker compose down -v` if you want to keep saved runs.
 
-For a container host of your choice: build with `docker build -t sectorpulse .`, configure container port 8000 and health path `/api/health`, inject `FRED_API_KEY` through the host's secret manager, and enable HTTPS at the host's ingress. The image runs as a non-root user. Do not expose the raw provider-fetching endpoint to large public traffic without rate limiting, caching, and concurrency limits at the ingress. This configuration is intended for a private/small MVP deployment.
+On a container host, build this image, keep one instance/worker, mount persistent storage writable by the application user, set `SECTORPULSE_DB=/app/data/sectorpulse.db`, inject keys through its secret manager, expose port 8000 behind HTTPS, and use `/api/health` for liveness. Use an access-controlled ingress for private use. There is no login; anyone who can reach the API can read the shared journal and trigger provider/AI work. The local queue cap is not per-user rate limiting.
 
-For separate frontend/backend hosting: run `npm ci && npm run build` in `frontend`, serve `frontend/dist`, and configure the frontend host to reverse-proxy `/api/*` to the private FastAPI service **preserving the `/api` prefix**. Forward `/docs` and `/openapi.json` only if desired. Configure a proxy timeout appropriate for provider retries (up to 15 minutes in a full outage). No client-side API key or permissive CORS setting is required. Both deployments require the same source version.
+For separate hosting, build `frontend` with `npm ci && npm run build`, serve `frontend/dist`, and reverse-proxy `/api/*` to FastAPI preserving the `/api` prefix. Keep API keys and SQLite on the backend host. No client-side keys or broad CORS policy is necessary. Refresh returns promptly; the browser polls, so no 15-minute proxy request timeout is needed. Use the same source version for both services.
 
-No external service was deployed and no account was created. Docker daemon availability is required to validate the image; see VERIFICATION.md for checks performed here.
+No external deployment or account creation has been performed. Container execution requires a working Docker daemon; current verification limits are recorded separately.
 
-## Troubleshooting
+## Remaining limitations / troubleshooting
 
-| Symptom | What to check |
-| --- | --- |
-| Port 8000 is already in use | Stop the previous SectorPulse process, or start Uvicorn on another port and open that port. For Vite development, also update its proxy target. |
-| FRED inputs are unavailable | Set `FRED_API_KEY` on the server and restart. Price ranking still works without it. |
-| Only some sectors are ranked | Read the exclusion reasons. A sector needs all 61 benchmark sessions; use Refresh to retry the provider. |
-| Live data cannot load | Check provider/network availability or explicitly select Synthetic demo. Demo is never an automatic fallback. |
-| The dashboard is missing at `/` | Build `frontend/dist` with `npm run build`, then restart FastAPI. |
-| You see old frontend changes | Rebuild for production; for development, restart Vite if file watching missed a change. |
-
-## Remaining limitations
-
-AI agents/narratives, RRG visualization, allocation recommendations, database persistence, saved analysis runs, authentication, exchange-calendar validation, scheduled refreshes, and a production cache/job queue are not implemented. AI is explicitly disabled; no prompts or dates are sent to an LLM. The empty `agents` and `db` packages preserve extension points without claiming functionality. Browser settings are device-local. FRED live success needs a real key and was not verified without one. Provider licensing, availability, and revision behavior must be considered before broader commercial use.
+- Live provider outages can yield partial or failed runs. Read exclusions/job errors, then retry explicitly; last saved research remains readable.
+- AI live verification failed in this environment; mocked contract/success/failure paths pass. Key configuration alone does not prove provider access.
+- FRED live success has not been verified without a real configured key. Missing-key and vintage/failure behavior are tested.
+- No licensed point-in-time price feed, full exchange calendar, transaction-cost calibration, statistically established edge, portfolio allocation, authentication, scheduled refresh or multi-user settings.
+- If `/` is missing, build `frontend/dist`. If port 8000 is busy, use another backend port (and update the Vite proxy for development). After production frontend changes, rebuild and reload the browser.
+- History stores sensitive research context in a shared local journal. Raw snapshots can be large; provider licensing and data retention need consideration before broader distribution.

@@ -5,21 +5,33 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
-from app.config import get_available_sectors
+from app.config import SECTOR_LAUNCH_DATES, SECTOR_TICKERS, get_available_sectors
 
 
 def demo_prices(end: date) -> pd.DataFrame:
-    dates = pd.bdate_range(end=pd.Timestamp(end), periods=100)
-    t = np.arange(len(dates))
+    dates = pd.bdate_range(end=pd.Timestamp(end), periods=1000)
+    t = (dates - pd.Timestamp("1990-01-01")).days.to_numpy() / 7 * 5
     tickers = [*get_available_sectors(end), "SPY"]
-    return pd.DataFrame(
+    frame = pd.DataFrame(
         {
             ticker: 100
-            * np.exp((0.00015 + i * 0.00006) * t + 0.009 * np.sin(t / 9 + i))
-            for i, ticker in enumerate(tickers)
+            * np.exp(
+                (0.00003 + i * 0.000005) * t
+                + 0.03 * np.sin(t / (17 + i) + i)
+                + 0.02 * np.sin(t / 130 + i)
+            )
+            for ticker in tickers
+            for i in [(SECTOR_TICKERS + ["SPY"]).index(ticker)]
         },
         index=dates,
     )
+    for ticker in tickers:
+        frame.loc[
+            frame.index
+            < pd.Timestamp(SECTOR_LAUNCH_DATES.get(ticker, date(1993, 1, 22))),
+            ticker,
+        ] = np.nan
+    return frame
 
 
 def demo_macro(end: date) -> dict[str, pd.Series]:

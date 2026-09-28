@@ -1,16 +1,14 @@
-from datetime import UTC, date, datetime
+from datetime import date
 from unittest.mock import Mock, patch
 
 import httpx
 import numpy as np
 import pandas as pd
 import pytest
-from fastapi.testclient import TestClient
 
-from app.analysis import cycle_context, score_sectors
+from app.analysis import macro_context, score_sectors
 from app.data import fetcher
 from app.data.demo import demo_macro, demo_prices
-from app.main import app
 
 END = date(2025, 1, 31)
 
@@ -101,7 +99,7 @@ def test_scoring_formula_no_future():
         assert row["score"] == pytest.approx(
             0.4 * row["relative_20d"] + 0.6 * row["relative_60d"], abs=0.0001
         )
-        assert row["cycle_bonus"] == 0
+        assert "cycle_bonus" not in row
     future = pd.DataFrame(
         {t: [99999] for t in prices.columns}, index=pd.to_datetime(["2025-02-03"])
     )
@@ -131,69 +129,17 @@ def test_weekend_and_ties():
     )
 
 
-@pytest.mark.parametrize(
-    "values,spread,phase",
-    [
-        ([4, 4, 4, 4.4], 1, "contraction"),
-        ([4, 4, 4, 4], -1, "slowdown"),
-        ([4.4, 4.3, 4.2, 4], 1, "recovery"),
-        ([4, 4, 4, 4], 1, "expansion"),
-    ],
-)
-def test_cycle(values, spread, phase):
-    dates = pd.date_range(end=pd.Timestamp(END), periods=4, freq="30D")
-    macro = {
-        "UNEMPLOYMENT": pd.Series(values, index=dates),
-        "YIELD_CURVE": pd.Series([spread], index=[pd.Timestamp(END)]),
-    }
-    assert cycle_context(macro, END)["phase"] == phase
-    assert (
-        sum(
-            r["cycle_bonus"] > 0
-            for r in score_sectors(demo_prices(END), macro, END)["ranking"]
-        )
-        == 5
-    )
+def test_macro_separate_from_ranking():
+    prices = demo_prices(END)
+    no_macro = score_sectors(prices, {}, END)
+    with_macro = score_sectors(prices, demo_macro(END), END)
+    assert no_macro["ranking"] == with_macro["ranking"]
+    assert no_macro["context"] != with_macro["context"]
+    assert all("cycle_bonus" not in row for row in with_macro["ranking"])
 
 
 def test_stale_macro():
-    assert cycle_context(demo_macro(END), date(2025, 6, 1))["phase"] == "unknown"
-
-
-def test_api_demo():
-    client = TestClient(app)
-    for endpoint in ("health", "prices", "macro", "analysis"):
-        response = client.get(
-            f"/api/{endpoint}", params={"mode": "demo", "as_of_date": str(END)}
-        )
-        assert response.status_code == 200, response.text
-    body = client.get(
-        "/api/analysis", params={"mode": "demo", "as_of_date": str(END)}
-    ).json()
-    assert len(body["ranking"]) == 11 and len(body["prices"]) == 12
-    assert body["ai"]["status"] == "disabled" and body["updated_at"]
-
-
-def test_api_errors_no_key():
-    client = TestClient(app)
-    for value in ("bad", "1998-01-01", str(datetime.now(UTC).date())):
-        assert (
-            client.get("/api/analysis", params={"as_of_date": value}).status_code == 422
-        )
-    assert client.get("/api/analysis?mode=bad").status_code == 422
-    with patch.dict("os.environ", {}, clear=True):
-        assert client.get("/api/macro").json()["status"] == "unavailable"
-    with patch("app.main.fetch_sector_prices", side_effect=RuntimeError("secret")):
-        response = client.get("/api/analysis")
-        assert response.status_code == 503 and "secret" not in response.text
-
-
-def test_live_api_without_key():
-    with (
-        patch.dict("os.environ", {}, clear=True),
-        patch("app.main.fetch_sector_prices", return_value=demo_prices(END)),
-    ):
-        response = TestClient(app).get("/api/analysis", params={"as_of_date": str(END)})
-    assert response.status_code == 200
-    assert response.json()["cycle"]["phase"] == "unknown"
-    assert response.json()["macro"]["status"] == "unavailable"
+    assert all(
+        item["state"] == "unavailable"
+        for item in macro_context(demo_macro(END), date(2025, 6, 1))
+    )

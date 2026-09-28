@@ -27,3 +27,9 @@ frontend/dist/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+
+# Local research journal and provider caches
+/data/
+*.db-wal
+*.db-shm
+*.worker.lock
