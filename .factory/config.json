@@ -1,0 +1,39 @@
+{
+  "goal": "AI-powered sector rotation analytics web app using Claude agents to analyze macroeconomic conditions, score market sectors, generate portfolio allocations, and deliver visual dashboards with RRG charts.",
+  "scope": [
+    "backend/app/**/*.py",
+    "backend/tests/**/*.py",
+    "frontend/src/**/*.tsx",
+    "frontend/src/**/*.ts",
+    "frontend/src/**/*.css",
+    "eval/score.py"
+  ],
+  "guards": [
+    "Do not delete or overwrite existing tests",
+    "Do not modify files outside the declared scope",
+    "Do not introduce secrets or credentials into the repository",
+    "Do not pass current dates to agent prompts (anti-look-ahead-bias rule)",
+    "Do not switch agents back to claude-opus-4-6 \u2014 use claude-sonnet-4-6"
+  ],
+  "eval_command": "python3 eval/score.py",
+  "eval_threshold": 0.6,
+  "constraints": [],
+  "hypothesis_budget": {
+    "min_growth": 2,
+    "max_new": 2
+  },
+  "target_branch": "main",
+  "smoke_test": "cd backend && python3 -c \"import uvicorn,threading,time,urllib.request; t=threading.Thread(target=lambda:uvicorn.run('app.main:app',host='127.0.0.1',port=18765,log_level='warning'),daemon=True); t.start(); time.sleep(3); r=urllib.request.urlopen('http://127.0.0.1:18765/api/health'); assert r.status==200; print('PASS')\"",
+  "project_eval": [],
+  "eval_weights": {
+    "hygiene": 0.5,
+    "growth": 0.5,
+    "project": 0.0
+  },
+  "research_target": null,
+  "mutable_surfaces": [],
+  "fixed_surfaces": [],
+  "research_constraints": [],
+  "cost_budget": null,
+  "hard_constraints": []
+}

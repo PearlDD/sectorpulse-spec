@@ -1,0 +1,1 @@
+Fix frontend static serving with SPAStaticFiles fallback (retry)

@@ -1,0 +1,15 @@
+{
+  "id": 2,
+  "timestamp": "2026-08-07 17:27:48.768350",
+  "hypothesis": "Fix frontend static serving with SPAStaticFiles fallback",
+  "change_summary": "Added SPAStaticFiles class with lookup_path override. SPA routes now return index.html correctly.",
+  "issue_number": 4,
+  "pr_number": 6,
+  "score_before": null,
+  "score_after": null,
+  "delta": null,
+  "verdict": "revert",
+  "cost_usd": null,
+  "notes": "[OVERRIDDEN by finalize gate] precheck failed: score_direction; anti_pattern. ceo:keep score_delta=+0.0001 precheck=manual_verified agents_spawned=R,S,B,R,E pr_status=open_for_review hypothesis_type=code execution_artifacts=na e2e=pass backlog_cleared=yes",
+  "research_citations": []
+}

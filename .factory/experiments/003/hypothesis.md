@@ -1,0 +1,1 @@
+Add SPAStaticFiles class to serve React SPA for client-side routes

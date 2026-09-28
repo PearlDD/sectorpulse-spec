@@ -1,0 +1,1 @@
+Fix frontend static serving with SPAStaticFiles fallback: add lookup_path override to serve index.html for SPA client-side routes

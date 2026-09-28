@@ -1,0 +1,15 @@
+{
+  "project_type": "web_app",
+  "dimensions": [
+    {"name": "tests", "command": "cd backend && python3 -m pytest", "weight": 0.25, "parser": "exit_code", "description": "Run pytest"},
+    {"name": "lint", "command": "cd backend && python3 -m ruff check .", "weight": 0.15, "parser": "exit_code", "description": "Ruff linter"},
+    {"name": "type_check", "command": "cd backend && python3 -m mypy app/ --ignore-missing-imports", "weight": 0.1, "parser": "exit_code", "description": "Mypy type check"},
+    {"name": "frontend_build", "command": "cd frontend && npm run build", "weight": 0.1, "parser": "exit_code", "description": "Frontend TypeScript build"},
+    {"name": "observability", "command": "(inline)", "weight": 0.1, "parser": "json", "description": "Logging coverage"},
+    {"name": "capability_surface", "command": "(inline)", "weight": 0.2, "parser": "json", "description": "API endpoints + agents"},
+    {"name": "guard_patterns", "command": "(inline)", "weight": 0.1, "parser": "json", "description": "Date safety in prompts"}
+  ],
+  "tier": "explicit",
+  "confidence": 0.9,
+  "human_reviewed": true
+}

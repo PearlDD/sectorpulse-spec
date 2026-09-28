@@ -1,0 +1,14 @@
+## E2E Verification
+- **Status:** PASS
+- **Start command:** cd backend && uvicorn app.main:app --port 8000
+- **What was tested:**
+  - Backend starts successfully (port 8765/8766)
+  - GET /api/health returns 200 {"status":"ok","last_run":null}
+  - GET /api/reports returns 200 []
+  - Frontend builds via npm run build (427ms, produces dist/)
+  - Static serving: GET / returns HTML with SectorPulse content
+  - Full stack: single FastAPI process serves API + static frontend
+  - 87 tests pass (1 skipped)
+- **Issues found:** Scheduler correctly disabled when ANTHROPIC_API_KEY not set (expected)
+- **User input needed:** ANTHROPIC_API_KEY and FRED_API_KEY for full analysis runs
+- **Smoke test command:** cd backend && python3 -c "import uvicorn,threading,time,urllib.request; t=threading.Thread(target=lambda:uvicorn.run('app.main:app',host='127.0.0.1',port=18765,log_level='warning'),daemon=True); t.start(); time.sleep(3); r=urllib.request.urlopen('http://127.0.0.1:18765/api/health'); assert r.status==200; print('PASS')"
