@@ -15,6 +15,7 @@ from app.data.fetcher import resolve_date
 from app.db.store import Store
 from app.services.explanation import configured
 from app.services.jobs import JobRunner, calculate
+from app.services.research import ResearchDesk
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s %(message)s")
@@ -38,9 +39,14 @@ async def lifespan(app: FastAPI):
     runner = JobRunner(store)
     runner.start()
     app.state.store, app.state.runner = store, runner
+    desk = ResearchDesk(path)
+    app.state.research = desk
+    if os.getenv("SECTORPULSE_RESEARCH_AUTO", "1") != "0":
+        desk.start()
     try:
         yield
     finally:
+        desk.close()
         runner.close()
 
 
@@ -200,6 +206,36 @@ def start_explanation(run_id: str, request: Request) -> dict:
     if storage(request).explanation(run_id):
         return {"cached": True, "explanation": storage(request).explanation(run_id)}
     return enqueue(storage(request), "explanation", {"run_id": run_id})
+
+
+# Current research desk is separate from immutable historical price runs.
+@app.get("/api/research")
+def research_view(request: Request) -> dict:
+    return request.app.state.research.view()
+
+
+@app.post("/api/research/refresh", status_code=202)
+def research_refresh(request: Request) -> dict:
+    started = request.app.state.research.request_refresh()
+    return {
+        "started": started,
+        "message": "正在采集" if started else "已有采集任务运行中",
+    }
+
+
+@app.get("/api/research/reports")
+def research_history(request: Request) -> list[dict]:
+    return request.app.state.research.history()
+
+
+@app.get("/api/research/reports/{report_id}")
+def research_report(report_id: int, request: Request) -> dict:
+    try:
+        return request.app.state.research.report(report_id)
+    except KeyError:
+        raise HTTPException(
+            404, detail={"message": "Research report not found"}
+        ) from None
 
 
 # Compatibility reads: cached only, never start provider calls on GET.

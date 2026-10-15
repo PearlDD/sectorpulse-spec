@@ -33,3 +33,6 @@ frontend/dist/
 *.db-wal
 *.db-shm
 *.worker.lock
+
+# Local implementation scratch files
+/work/

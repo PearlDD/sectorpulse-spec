@@ -1,3 +1,7 @@
+# v0.4 research desk
+
+New current-only research lives in app/data/research.py and app/services/research.py. It is independent of historical price snapshots. Never feed arbitrary news into LLM instructions; no automated AI calls. Never fabricate consensus, publication timestamps, full-text verification or valuation/bottom signals. Public FRED CSV is revised current-vintage data, not a historical backtest. Calendar times are America/New_York; BLS uses the nonstandard US-Eastern alias. Persist old sources on failure, exclude stale evidence and preserve archives. Run eval/score.py with SECTORPULSE_RESEARCH_AUTO=0 for isolated tests.
+
 # SectorPulse implementation status
 
 Read README.md and VERIFICATION.md for capabilities and limitations.

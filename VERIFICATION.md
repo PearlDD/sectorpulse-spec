@@ -1,3 +1,25 @@
+# v0.5 verification — 2026-10-15
+
+- Full evaluation passed: backend tests, Ruff, mypy, frontend types, lint and production build. Added sector tests cover all 11 main sectors plus 4 distinct subindustries, all price-state branches, exact heat thresholds, stale/demo/future/missing reports, nonfinite values and no inheritance of parent prices.
+- The language-rendering test passed: Chinese/English labels, preserved whitespace, date-range wording, accessible labels and unchanged canonical select values. It is now included in eval/score.py.
+- Browser checks confirmed all 11 main-sector cards, state counts from the actual saved live report, heat filtering, subindustry filtering, state retention during language changes, and English preference persistence after reload. In English mode, the only visible Chinese text was the intentional 中文 language-switch label.
+- Verified the current narrow browser (304px) and the wide reference layout (1425px content width); neither had document-level horizontal overflow. Reset the temporary wide viewport after checking. Source headlines remain original text.
+- Price groups are descriptive rules based on a recent immutable live price report, not an overvaluation/crowding measure or a fundamental-cycle conclusion. Subindustries without direct price reports remain explicitly unclassified. Fundamental confirmation and valuation gaps remain visible.
+
+---
+
+# v0.4 verification — 2026-10-15
+
+- Existing full evaluation passed (backend tests, Ruff, mypy, strict frontend types, lint, production build). The final source-classification fixes passed all 15 focused research tests plus Ruff and mypy.
+- Real local acquisition succeeded for all 20 resources: 13 FRED series, 4 RSS feeds, BLS/BEA ICS and FOMC HTML. Empty topic-matching news results are distinguished from acquisition failures.
+- Browser verified the macro desk, manual refresh progress, official event dates with US daylight saving transitions, important-event filtering, news topic filtering and source status. Default viewport content width matched client width (1265px).
+- Fixed real-source issues: BLS US-Eastern timezone alias, missing-month FRED comparison by actual calendar endpoints, regional personal-income/GDP classification, and substring false positives in news matching.
+- Automated coverage includes missing/stale inputs, invalid/future observations, ICS folded lines/UTC/all-day/DST, FOMC parsing, election dates, no fabricated consensus, failure preservation, archived source inputs, duplicate news, scheduler slots and read-only API behavior.
+- Local background service and double-click startup entry prepared; shell syntax checked. Reboot/login autostart is not configured. No cloud or Supabase changes and no automatic paid AI calls.
+- Limitations: title-only news and conditional transmission templates, no full-text synthesis, no consensus surprises, no verified industry valuation/orders/inventory feed or buy ranking, no prospective evidence of predictive returns. Scheduling cannot collect while the computer sleeps or the service is stopped.
+
+---
+
 # Verification — v0.3
 
 Verified 2026-09-28 using Python 3.12.3 and Node 25.6.1. Documented installation target: Python 3.12 and Node 24 LTS on macOS/Linux.
