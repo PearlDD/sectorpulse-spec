@@ -1,3 +1,19 @@
+# v0.5 — Full-sector coverage and language switching
+
+The header now switches between Chinese and English and remembers the preference locally. The desk covers all 11 major US sectors plus 4 selected subindustries, grouped by transparent price-state rules from the latest saved live report. Stale, synthetic or missing prices cannot produce a heat label; subindustries never inherit their parent-sector price state. Each group has a distinct research focus. These are price descriptions, not valuation, crowding or fundamental-bottom signals.
+
+Run `node frontend/tests/i18n.cjs` for translation/accessible-label/filter-identity checks in addition to the existing evaluation. See README.zh-CN.md for the rule thresholds.
+
+---
+
+# v0.4 — Local US macro research desk
+
+The home page now provides current-vintage macro evidence, scheduled RSS collection, official economic calendars, and conditional industry watchlists. See README.zh-CN.md for the new workflow and precise limitations. The v0.3 price research remains under the Price auxiliary tab. No cloud deployment or paid AI call was performed. Double-click `run-local.command` to start with an existing environment.
+
+The daily scheduler updates the research desk, not the legacy price-run queue. Consensus surprises, industry fundamentals/valuation and full-text news synthesis are not implemented. Watchlists are unconfirmed hypotheses, not buy rankings.
+
+---
+
 # SectorPulse
 
 [中文说明](README.zh-CN.md) · [Verification](VERIFICATION.md) · [Original baseline](BASELINE.md)

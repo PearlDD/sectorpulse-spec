@@ -38,6 +38,7 @@ def main() -> int:
     results["mypy"] = run([sys.executable, "-m", "mypy", "app/"], cwd=backend)
 
     results["frontend types"] = run(["npm", "run", "typecheck"], cwd="frontend")
+    results["language rendering"] = run(["node", "tests/i18n.cjs"], cwd="frontend")
     results["frontend lint"] = run(["npm", "run", "lint"], cwd="frontend")
     results["frontend build"] = run(["npm", "run", "build"], cwd="frontend")
 
